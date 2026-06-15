@@ -1,5 +1,7 @@
 use "nitpick_gtk4.npk".*;
 use "gui/input_fsm.npk".*;
+use "core/lexer.npk".*;
+use "core/parser.npk".*;
 
 int64:STDOUT = 1i64;
 
@@ -83,6 +85,7 @@ func:main = int32() {
     
     // Initialize FSM
     InputState:state = raw fsm_init();
+    raw gtk4_entry_set_text(entry_id, "");
     
     raw gtk4_window_present();
 
@@ -92,7 +95,55 @@ func:main = int32() {
             int32:event = raw gtk4_get_last_event();
             if (event == raw GTK_EVT_DESTROY()) {
                 raw gtk4_quit();
-            }
+            } else {
+            if (event == raw GTK_EVT_CLICKED()) {
+                int32:btn = raw gtk4_get_last_clicked_button();
+                string:append_char = "";
+                bool:should_append = false;
+                
+                if (btn == btn_ac) {
+                    state = raw fsm_clear(state);
+                    raw gtk4_entry_set_text(entry_id, "");
+                } else {
+                if (btn == btn_c) {
+                    state = raw fsm_backspace(state);
+                    raw gtk4_entry_set_text(entry_id, state.expr);
+                } else {
+                if (btn == btn_eq) {
+                    ParseResult:res = raw eval_expression(state.expr);
+                    if (res.error) {
+                        raw gtk4_entry_set_text(entry_id, "Error");
+                        state = raw fsm_clear(state);
+                    } else {
+                        string:ans = raw gtk4_float_to_string(res.val);
+                        state = raw fsm_clear(state);
+                        state = raw fsm_append_text(state, ans);
+                        raw gtk4_entry_set_text(entry_id, state.expr);
+                    }
+                } else {
+                    if (btn == btn_0) { append_char = "0"; should_append = true; } else {
+                    if (btn == btn_1) { append_char = "1"; should_append = true; } else {
+                    if (btn == btn_2) { append_char = "2"; should_append = true; } else {
+                    if (btn == btn_3) { append_char = "3"; should_append = true; } else {
+                    if (btn == btn_4) { append_char = "4"; should_append = true; } else {
+                    if (btn == btn_5) { append_char = "5"; should_append = true; } else {
+                    if (btn == btn_6) { append_char = "6"; should_append = true; } else {
+                    if (btn == btn_7) { append_char = "7"; should_append = true; } else {
+                    if (btn == btn_8) { append_char = "8"; should_append = true; } else {
+                    if (btn == btn_9) { append_char = "9"; should_append = true; } else {
+                    if (btn == btn_dot) { append_char = "."; should_append = true; } else {
+                    if (btn == btn_add) { append_char = "+"; should_append = true; } else {
+                    if (btn == btn_sub) { append_char = "-"; should_append = true; } else {
+                    if (btn == btn_mul) { append_char = "*"; should_append = true; } else {
+                    if (btn == btn_div) { append_char = "/"; should_append = true; }
+                    }}}}}}}}}}}}}}}
+                }}}
+                
+                if (should_append) {
+                    state = raw fsm_append_text(state, append_char);
+                    raw gtk4_entry_set_text(entry_id, state.expr);
+                }
+            }}
         }
     }
     
