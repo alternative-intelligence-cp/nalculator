@@ -1,0 +1,165 @@
+// src/core/parser.npk
+
+use "lexer.npk".*;
+
+pub struct:ParseResult = {
+    float64:val;
+    int64:next_pos;
+    bool:error;
+};
+
+pub func:parse_float64 = float64(string:s) {
+    int64:len = string_length(s);
+    int64:pos = 0i64;
+    float64:result = 0.0;
+    
+    bool:reading_int = true;
+    while (reading_int) {
+        if (pos < len) {
+            string:c = raw str_char_at(s, pos);
+            if (raw is_digit(c)) {
+                float64:d = 0.0;
+                if (c == "1") { d = 1.0; }
+                if (c == "2") { d = 2.0; }
+                if (c == "3") { d = 3.0; }
+                if (c == "4") { d = 4.0; }
+                if (c == "5") { d = 5.0; }
+                if (c == "6") { d = 6.0; }
+                if (c == "7") { d = 7.0; }
+                if (c == "8") { d = 8.0; }
+                if (c == "9") { d = 9.0; }
+                result = (result * 10.0) + d;
+                pos = pos + 1i64;
+            } else {
+                reading_int = false;
+            }
+        } else {
+            reading_int = false;
+        }
+    }
+    
+    if (pos < len) {
+        string:c = raw str_char_at(s, pos);
+        if (c == ".") {
+            pos = pos + 1i64;
+            float64:frac = 0.1;
+            bool:reading_frac = true;
+            while (reading_frac) {
+                if (pos < len) {
+                    string:fc = raw str_char_at(s, pos);
+                    if (raw is_digit(fc)) {
+                        float64:d = 0.0;
+                        if (fc == "1") { d = 1.0; }
+                        if (fc == "2") { d = 2.0; }
+                        if (fc == "3") { d = 3.0; }
+                        if (fc == "4") { d = 4.0; }
+                        if (fc == "5") { d = 5.0; }
+                        if (fc == "6") { d = 6.0; }
+                        if (fc == "7") { d = 7.0; }
+                        if (fc == "8") { d = 8.0; }
+                        if (fc == "9") { d = 9.0; }
+                        result = result + (d * frac);
+                        frac = frac * 0.1;
+                        pos = pos + 1i64;
+                    } else {
+                        reading_frac = false;
+                    }
+                } else {
+                    reading_frac = false;
+                }
+            }
+        }
+    }
+    pass(result);
+};
+
+func:get_precedence = int64(int64:tok_type) {
+    if (tok_type == raw TOK_PLUS()) { pass(10i64); }
+    if (tok_type == raw TOK_MINUS()) { pass(10i64); }
+    if (tok_type == raw TOK_MUL()) { pass(20i64); }
+    if (tok_type == raw TOK_DIV()) { pass(20i64); }
+    pass(0i64); // default precedence 0 for non-operators
+};
+
+pub func:parse_expr = ParseResult(string:input, int64:pos, int64:min_prec) {
+    ParseResult:res;
+    LexResult:lex = raw lex_next(input, pos);
+    int64:p = lex.next_pos;
+    
+    // Parse LHS (factor or unary operator)
+    if (lex.tok.type == raw TOK_NUMBER()) {
+        res.val = raw parse_float64(lex.tok.text);
+        res.next_pos = p;
+        res.error = false;
+    } else {
+        if (lex.tok.type == raw TOK_LPAREN()) {
+            ParseResult:inner = raw parse_expr(input, p, 0i64);
+            if (inner.error) {
+                pass(inner);
+            }
+            LexResult:lex2 = raw lex_next(input, inner.next_pos);
+            if (lex2.tok.type == raw TOK_RPAREN()) {
+                res.val = inner.val;
+                res.next_pos = lex2.next_pos;
+                res.error = false;
+            } else {
+                res.error = true;
+                pass(res);
+            }
+        } else {
+            if (lex.tok.type == raw TOK_MINUS()) {
+                // Unary minus has highest precedence (say 30)
+                ParseResult:inner = raw parse_expr(input, p, 30i64);
+                if (inner.error) { pass(inner); }
+                res.val = 0.0 - inner.val;
+                res.next_pos = inner.next_pos;
+                res.error = false;
+            } else {
+                res.error = true;
+                pass(res);
+            }
+        }
+    }
+    
+    // Precedence climbing
+    bool:climbing = true;
+    while (climbing) {
+        LexResult:op_lex = raw lex_next(input, res.next_pos);
+        int64:prec = raw get_precedence(op_lex.tok.type);
+        
+        if (prec > 0i64) {
+            if (prec >= min_prec) {
+                // Left associative, so next min_prec = prec + 1
+                int64:next_prec = prec + 1i64;
+                ParseResult:rhs = raw parse_expr(input, op_lex.next_pos, next_prec);
+                if (rhs.error) {
+                    pass(rhs);
+                }
+                
+                if (op_lex.tok.type == raw TOK_PLUS()) {
+                    res.val = res.val + rhs.val;
+                }
+                if (op_lex.tok.type == raw TOK_MINUS()) {
+                    res.val = res.val - rhs.val;
+                }
+                if (op_lex.tok.type == raw TOK_MUL()) {
+                    res.val = res.val * rhs.val;
+                }
+                if (op_lex.tok.type == raw TOK_DIV()) {
+                    res.val = res.val / rhs.val;
+                }
+                res.next_pos = rhs.next_pos;
+            } else {
+                climbing = false;
+            }
+        } else {
+            climbing = false;
+        }
+    }
+    
+    pass(res);
+};
+
+pub func:eval_expression = ParseResult(string:input) {
+    pass(raw parse_expr(input, 0i64, 0i64));
+};
