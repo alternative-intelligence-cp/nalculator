@@ -49,9 +49,13 @@ func:main = int32() {
     int32:btn_sin  = raw gtk4_add_button("sin");
     int32:btn_cos  = raw gtk4_add_button("cos");
     int32:btn_tan  = raw gtk4_add_button("tan");
+    int32:btn_log  = raw gtk4_add_button("log");
+    
     int32:btn_pow  = raw gtk4_add_button("^");
     int32:btn_sqrt = raw gtk4_add_button("sqrt");
     int32:btn_pi   = raw gtk4_add_button("pi");
+    int32:btn_ln   = raw gtk4_add_button("ln");
+    
     int32:btn_e    = raw gtk4_add_button("e");
     int32:btn_lpar = raw gtk4_add_button("(");
     int32:btn_rpar = raw gtk4_add_button(")");
@@ -59,14 +63,16 @@ func:main = int32() {
     raw gtk4_grid_attach(sci_grid, btn_sin,  0i32, 0i32, 1i32, 1i32);
     raw gtk4_grid_attach(sci_grid, btn_cos,  1i32, 0i32, 1i32, 1i32);
     raw gtk4_grid_attach(sci_grid, btn_tan,  2i32, 0i32, 1i32, 1i32);
+    raw gtk4_grid_attach(sci_grid, btn_log,  3i32, 0i32, 1i32, 1i32);
     
     raw gtk4_grid_attach(sci_grid, btn_pow,  0i32, 1i32, 1i32, 1i32);
     raw gtk4_grid_attach(sci_grid, btn_sqrt, 1i32, 1i32, 1i32, 1i32);
     raw gtk4_grid_attach(sci_grid, btn_pi,   2i32, 1i32, 1i32, 1i32);
+    raw gtk4_grid_attach(sci_grid, btn_ln,   3i32, 1i32, 1i32, 1i32);
     
-    raw gtk4_grid_attach(sci_grid, btn_e,    0i32, 2i32, 1i32, 1i32);
-    raw gtk4_grid_attach(sci_grid, btn_lpar, 1i32, 2i32, 1i32, 1i32);
-    raw gtk4_grid_attach(sci_grid, btn_rpar, 2i32, 2i32, 1i32, 1i32);
+    raw gtk4_grid_attach(sci_grid, btn_e,    0i32, 2i32, 2i32, 1i32);
+    raw gtk4_grid_attach(sci_grid, btn_lpar, 2i32, 2i32, 1i32, 1i32);
+    raw gtk4_grid_attach(sci_grid, btn_rpar, 3i32, 2i32, 1i32, 1i32);
     
     // -------------------------------------------------------------
     // STANDARD GRID
@@ -194,13 +200,15 @@ func:main = int32() {
                     if (btn == btn_sin) { append_char = "sin("; should_append = true; } else {
                     if (btn == btn_cos) { append_char = "cos("; should_append = true; } else {
                     if (btn == btn_tan) { append_char = "tan("; should_append = true; } else {
+                    if (btn == btn_log) { append_char = "log("; should_append = true; } else {
                     if (btn == btn_pow) { append_char = "^"; should_append = true; } else {
                     if (btn == btn_sqrt){ append_char = "sqrt("; should_append = true; } else {
                     if (btn == btn_pi)  { append_char = "pi"; should_append = true; } else {
+                    if (btn == btn_ln)  { append_char = "ln("; should_append = true; } else {
                     if (btn == btn_e)   { append_char = "e"; should_append = true; } else {
                     if (btn == btn_lpar){ append_char = "("; should_append = true; } else {
                     if (btn == btn_rpar){ append_char = ")"; should_append = true; }
-                    }}}}}}}}}}}}}}}}}}}}}}}
+                    }}}}}}}}}}}}}}}}}}}}}}}}}
                 }}}}
                 
                 if (should_append) {

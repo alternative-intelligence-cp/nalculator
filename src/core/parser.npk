@@ -131,7 +131,8 @@ pub func:parse_expr = ParseResult(string:input, int64:pos, int64:min_prec) {
                                 if (lex.tok.text == "acos") { res.val = acos(arg1.val); }
                                 if (lex.tok.text == "atan") { res.val = atan(arg1.val); }
                                 if (lex.tok.text == "sqrt") { res.val = sqrt(arg1.val); }
-                                if (lex.tok.text == "log") { res.val = log(arg1.val); }
+                                if (lex.tok.text == "log") { res.val = log10(arg1.val); }
+                                if (lex.tok.text == "ln") { res.val = log(arg1.val); }
                                 if (lex.tok.text == "log2") { res.val = log2(arg1.val); }
                                 if (lex.tok.text == "log10") { res.val = log10(arg1.val); }
                                 if (lex.tok.text == "exp") { res.val = exp(arg1.val); }
