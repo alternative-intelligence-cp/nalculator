@@ -92,7 +92,68 @@ pub func:parse_expr = ParseResult(string:input, int64:pos, int64:min_prec) {
         res.next_pos = p;
         res.error = false;
     } else {
-        if (lex.tok.type == raw TOK_LPAREN()) {
+        if (lex.tok.type == raw TOK_IDENTIFIER()) {
+            if (lex.tok.text == "pi") {
+                res.val = 3.141592653589793;
+                res.next_pos = p;
+                res.error = false;
+            } else {
+                if (lex.tok.text == "e") {
+                    res.val = 2.718281828459045;
+                    res.next_pos = p;
+                    res.error = false;
+                } else {
+                    LexResult:peek_lex = raw lex_next(input, p);
+                    if (peek_lex.tok.type == raw TOK_LPAREN()) {
+                        ParseResult:arg1 = raw parse_expr(input, peek_lex.next_pos, 0i64);
+                        if (arg1.error) { pass(arg1); }
+                        
+                        LexResult:peek_comma = raw lex_next(input, arg1.next_pos);
+                        if (peek_comma.tok.type == raw TOK_COMMA()) {
+                            ParseResult:arg2 = raw parse_expr(input, peek_comma.next_pos, 0i64);
+                            if (arg2.error) { pass(arg2); }
+                            LexResult:lex_rparen = raw lex_next(input, arg2.next_pos);
+                            if (lex_rparen.tok.type == raw TOK_RPAREN()) {
+                                if (lex.tok.text == "pow") { res.val = pow(arg1.val, arg2.val); }
+                                if (lex.tok.text == "atan2") { res.val = atan2(arg1.val, arg2.val); }
+                                res.next_pos = lex_rparen.next_pos;
+                                res.error = false;
+                            } else {
+                                res.error = true;
+                                pass(res);
+                            }
+                        } else {
+                            if (peek_comma.tok.type == raw TOK_RPAREN()) {
+                                if (lex.tok.text == "sin") { res.val = sin(arg1.val); }
+                                if (lex.tok.text == "cos") { res.val = cos(arg1.val); }
+                                if (lex.tok.text == "tan") { res.val = tan(arg1.val); }
+                                if (lex.tok.text == "asin") { res.val = asin(arg1.val); }
+                                if (lex.tok.text == "acos") { res.val = acos(arg1.val); }
+                                if (lex.tok.text == "atan") { res.val = atan(arg1.val); }
+                                if (lex.tok.text == "sqrt") { res.val = sqrt(arg1.val); }
+                                if (lex.tok.text == "log") { res.val = log(arg1.val); }
+                                if (lex.tok.text == "log2") { res.val = log2(arg1.val); }
+                                if (lex.tok.text == "log10") { res.val = log10(arg1.val); }
+                                if (lex.tok.text == "exp") { res.val = exp(arg1.val); }
+                                if (lex.tok.text == "abs") { res.val = abs(arg1.val); }
+                                if (lex.tok.text == "floor") { res.val = floor(arg1.val); }
+                                if (lex.tok.text == "ceil") { res.val = ceil(arg1.val); }
+                                if (lex.tok.text == "round") { res.val = round(arg1.val); }
+                                res.next_pos = peek_comma.next_pos;
+                                res.error = false;
+                            } else {
+                                res.error = true;
+                                pass(res);
+                            }
+                        }
+                    } else {
+                        res.error = true;
+                        pass(res);
+                    }
+                }
+            }
+        } else {
+            if (lex.tok.type == raw TOK_LPAREN()) {
             ParseResult:inner = raw parse_expr(input, p, 0i64);
             if (inner.error) {
                 pass(inner);
@@ -117,6 +178,7 @@ pub func:parse_expr = ParseResult(string:input, int64:pos, int64:min_prec) {
             } else {
                 res.error = true;
                 pass(res);
+            }
             }
         }
     }

@@ -6,7 +6,9 @@ pub func:TOK_MUL    = int64() { pass(4i64); };
 pub func:TOK_DIV    = int64() { pass(5i64); };
 pub func:TOK_LPAREN = int64() { pass(6i64); };
 pub func:TOK_RPAREN = int64() { pass(7i64); };
-pub func:TOK_ERROR  = int64() { pass(8i64); };
+pub func:TOK_IDENTIFIER = int64() { pass(8i64); };
+pub func:TOK_COMMA  = int64() { pass(9i64); };
+pub func:TOK_ERROR  = int64() { pass(10i64); };
 
 pub struct:Token = {
     int64:type;
@@ -37,6 +39,28 @@ pub func:is_digit = bool(string:c) {
     if (c == "7") { pass(true); }
     if (c == "8") { pass(true); }
     if (c == "9") { pass(true); }
+    pass(false);
+};
+
+pub func:is_alpha = bool(string:c) {
+    if (c == "a") { pass(true); } if (c == "b") { pass(true); } if (c == "c") { pass(true); }
+    if (c == "d") { pass(true); } if (c == "e") { pass(true); } if (c == "f") { pass(true); }
+    if (c == "g") { pass(true); } if (c == "h") { pass(true); } if (c == "i") { pass(true); }
+    if (c == "j") { pass(true); } if (c == "k") { pass(true); } if (c == "l") { pass(true); }
+    if (c == "m") { pass(true); } if (c == "n") { pass(true); } if (c == "o") { pass(true); }
+    if (c == "p") { pass(true); } if (c == "q") { pass(true); } if (c == "r") { pass(true); }
+    if (c == "s") { pass(true); } if (c == "t") { pass(true); } if (c == "u") { pass(true); }
+    if (c == "v") { pass(true); } if (c == "w") { pass(true); } if (c == "x") { pass(true); }
+    if (c == "y") { pass(true); } if (c == "z") { pass(true); }
+    if (c == "A") { pass(true); } if (c == "B") { pass(true); } if (c == "C") { pass(true); }
+    if (c == "D") { pass(true); } if (c == "E") { pass(true); } if (c == "F") { pass(true); }
+    if (c == "G") { pass(true); } if (c == "H") { pass(true); } if (c == "I") { pass(true); }
+    if (c == "J") { pass(true); } if (c == "K") { pass(true); } if (c == "L") { pass(true); }
+    if (c == "M") { pass(true); } if (c == "N") { pass(true); } if (c == "O") { pass(true); }
+    if (c == "P") { pass(true); } if (c == "Q") { pass(true); } if (c == "R") { pass(true); }
+    if (c == "S") { pass(true); } if (c == "T") { pass(true); } if (c == "U") { pass(true); }
+    if (c == "V") { pass(true); } if (c == "W") { pass(true); } if (c == "X") { pass(true); }
+    if (c == "Y") { pass(true); } if (c == "Z") { pass(true); }
     pass(false);
 };
 
@@ -111,6 +135,33 @@ pub func:lex_next = LexResult(string:input, int64:start_pos) {
         res.tok.type = raw TOK_RPAREN();
         res.tok.text = ")";
         res.next_pos = pos + 1i64;
+        pass(res);
+    }
+    if (c == ",") {
+        res.tok.type = raw TOK_COMMA();
+        res.tok.text = ",";
+        res.next_pos = pos + 1i64;
+        pass(res);
+    }
+    
+    if (raw is_alpha(c)) {
+        res.tok.type = raw TOK_IDENTIFIER();
+        int64:end_pos = pos;
+        bool:reading = true;
+        while (reading) {
+            if (end_pos < len) {
+                string:nc = raw str_char_at(input, end_pos);
+                if (raw is_alpha(nc)) {
+                    end_pos = end_pos + 1i64;
+                } else {
+                    reading = false;
+                }
+            } else {
+                reading = false;
+            }
+        }
+        res.tok.text = string_substring(input, pos, end_pos);
+        res.next_pos = end_pos;
         pass(res);
     }
     
