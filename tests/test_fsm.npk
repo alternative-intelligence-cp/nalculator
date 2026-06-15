@@ -1,0 +1,48 @@
+use "../src/gui/input_fsm.npk".*;
+
+extern "libc" {
+    func:puts = int32(string:msg);
+    func:printf = int32(string:fmt, int32:v);
+}
+
+func:failsafe = int32(tbb32:err) { drop(err); exit 1i32; };
+
+func:assert_str_eq = bool(string:expected, string:actual, string:msg) {
+    if (expected != actual) {
+        drop(puts("ASSERTION FAILED:"));
+        drop(puts("  Expected: "));
+        drop(puts(expected));
+        drop(puts("  Actual: "));
+        drop(puts(actual));
+        drop(puts("  Message: "));
+        drop(puts(msg));
+        pass(false);
+    }
+    pass(true);
+};
+
+func:main = int32() {
+    InputState:state = raw fsm_init();
+    if (raw assert_str_eq("", state.expr, "Init should be empty") == false) { exit 1i32; }
+    
+    state = raw fsm_append_text(state, "1");
+    if (raw assert_str_eq("1", state.expr, "Append 1") == false) { exit 2i32; }
+    
+    state = raw fsm_append_text(state, "2");
+    if (raw assert_str_eq("12", state.expr, "Append 2") == false) { exit 3i32; }
+    
+    state = raw fsm_append_text(state, "+");
+    if (raw assert_str_eq("12+", state.expr, "Append +") == false) { exit 4i32; }
+    
+    state = raw fsm_backspace(state);
+    if (raw assert_str_eq("12", state.expr, "Backspace +") == false) { exit 5i32; }
+    
+    state = raw fsm_clear(state);
+    if (raw assert_str_eq("", state.expr, "Clear state") == false) { exit 6i32; }
+    
+    state = raw fsm_backspace(state);
+    if (raw assert_str_eq("", state.expr, "Backspace on empty") == false) { exit 7i32; }
+    
+    drop(puts("[PASS] T04 fsm comprehensive tests"));
+    exit 0i32;
+};

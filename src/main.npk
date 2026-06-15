@@ -1,4 +1,5 @@
 use "nitpick_gtk4.npk".*;
+use "gui/input_fsm.npk".*;
 
 int64:STDOUT = 1i64;
 
@@ -23,7 +24,15 @@ func:main = int32() {
     
     raw gtk4_set_title("Nalculator");
     raw gtk4_set_default_size(400i32, 600i32);
-    raw gtk4_load_css("");
+    
+    raw gtk4_load_css("entry { font-size: 32px; font-weight: bold; padding: 20px; }");
+    
+    // Add the main display entry
+    int32:entry_id = raw gtk4_add_entry("0");
+    raw gtk4_widget_add_css_class(entry_id, "display");
+    
+    // Initialize FSM
+    InputState:state = raw fsm_init();
     
     raw gtk4_window_present();
 

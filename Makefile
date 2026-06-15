@@ -10,6 +10,7 @@ test:
 	./.nitpick_make/build/test-nalculator
 	./.nitpick_make/build/test-lexer
 	./.nitpick_make/build/test-parser
+	./.nitpick_make/build/test-fsm
 
 clean:
 	rm -rf .nitpick_make

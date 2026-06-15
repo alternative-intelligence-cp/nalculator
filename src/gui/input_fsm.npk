@@ -1,0 +1,33 @@
+pub struct:InputState = {
+    string:expr;
+};
+
+pub func:fsm_init = InputState() {
+    InputState:state;
+    state.expr = "";
+    pass(state);
+};
+
+pub func:fsm_clear = InputState(InputState:state) {
+    drop(state);
+    InputState:new_state;
+    new_state.expr = "";
+    pass(new_state);
+};
+
+pub func:fsm_append_text = InputState(InputState:state, string:text) {
+    InputState:new_state;
+    new_state.expr = string_concat(state.expr, text);
+    pass(new_state);
+};
+
+pub func:fsm_backspace = InputState(InputState:state) {
+    int64:len = string_length(state.expr);
+    if (len == 0i64) {
+        pass(state);
+    }
+    
+    InputState:new_state;
+    new_state.expr = string_substring(state.expr, 0i64, len - 1i64);
+    pass(new_state);
+};
