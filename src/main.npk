@@ -62,6 +62,22 @@ func:main = int32() {
     
     int32:btn_angle_mode = raw gtk4_add_button("Rad");
     
+    // -------------------------------------------------------------
+    // MEMORY GRID
+    // -------------------------------------------------------------
+    int32:mem_grid = raw gtk4_add_grid();
+    raw gtk4_widget_add_css_class(mem_grid, "keypad");
+    int32:btn_mc = raw gtk4_add_button("MC");
+    int32:btn_mr = raw gtk4_add_button("MR");
+    int32:btn_mplus = raw gtk4_add_button("M+");
+    int32:btn_mminus = raw gtk4_add_button("M-");
+    int32:btn_ms = raw gtk4_add_button("MS");
+    raw gtk4_grid_attach(mem_grid, btn_mc, 0i32, 0i32, 1i32, 1i32);
+    raw gtk4_grid_attach(mem_grid, btn_mr, 1i32, 0i32, 1i32, 1i32);
+    raw gtk4_grid_attach(mem_grid, btn_mplus, 2i32, 0i32, 1i32, 1i32);
+    raw gtk4_grid_attach(mem_grid, btn_mminus, 3i32, 0i32, 1i32, 1i32);
+    raw gtk4_grid_attach(mem_grid, btn_ms, 4i32, 0i32, 1i32, 1i32);
+    
     raw gtk4_grid_attach(sci_grid, btn_sin,  0i32, 0i32, 1i32, 1i32);
     raw gtk4_grid_attach(sci_grid, btn_cos,  1i32, 0i32, 1i32, 1i32);
     raw gtk4_grid_attach(sci_grid, btn_tan,  2i32, 0i32, 1i32, 1i32);
@@ -130,17 +146,19 @@ func:main = int32() {
     raw gtk4_grid_attach(std_grid, btn_dot, 2i32, 4i32, 1i32, 1i32);
     raw gtk4_grid_attach(std_grid, btn_eq,  3i32, 4i32, 1i32, 1i32);
     
-    raw gtk4_box_append(keypad_box, sci_grid);
-    raw gtk4_box_append(keypad_box, std_grid);
+    raw gtk4_box_append(vbox, entry_id);
+    raw gtk4_box_append(vbox, btn_mode);
+    raw gtk4_box_append(vbox, mem_grid);
+    raw gtk4_box_append(vbox, sci_grid);
+    raw gtk4_box_append(vbox, std_grid);
     
     raw gtk4_widget_set_visible(sci_grid, 0i32); // Hide by default
     
     // Initialize FSM
     InputState:state = raw fsm_init();
-    raw gtk4_entry_set_text(entry_id, "");
-    
     bool:is_scientific = false;
-    bool:is_degrees = false;
+    bool:is_degrees = false; // Starts in Radians
+    float64:memory_register = 0.0;
     
     raw gtk4_window_present();
 
@@ -199,7 +217,39 @@ func:main = int32() {
                         state = raw fsm_clear(state);
                         state = raw fsm_append_text(state, ans);
                         raw gtk4_entry_set_text(entry_id, state.expr);
+                        should_append = false;
                     }
+                } else {
+                if (btn == btn_mc) {
+                    memory_register = 0.0;
+                    should_append = false;
+                } else {
+                if (btn == btn_mr) {
+                    string:m_str = raw gtk4_float_to_string(memory_register);
+                    state = raw fsm_append_text(state, m_str);
+                    raw gtk4_entry_set_text(entry_id, state.expr);
+                    should_append = false;
+                } else {
+                if (btn == btn_ms) {
+                    ParseResult:res = raw eval_expression(state.expr, is_degrees);
+                    if (res.error == false) {
+                        memory_register = res.val;
+                    }
+                    should_append = false;
+                } else {
+                if (btn == btn_mplus) {
+                    ParseResult:res = raw eval_expression(state.expr, is_degrees);
+                    if (res.error == false) {
+                        memory_register = memory_register + res.val;
+                    }
+                    should_append = false;
+                } else {
+                if (btn == btn_mminus) {
+                    ParseResult:res = raw eval_expression(state.expr, is_degrees);
+                    if (res.error == false) {
+                        memory_register = memory_register - res.val;
+                    }
+                    should_append = false;
                 } else {
                     if (btn == btn_0) { append_char = "0"; should_append = true; } else {
                     if (btn == btn_1) { append_char = "1"; should_append = true; } else {
