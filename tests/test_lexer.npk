@@ -1,0 +1,68 @@
+use "../src/core/lexer.npk".*;
+
+int64:STDOUT = 1i64;
+
+func:print_line = NIL(string:msg) {
+    int64:len = string_length(msg);
+    drop(sys(WRITE, STDOUT, msg, len));
+    pass(NIL);
+};
+
+func:failsafe = int32(tbb32:_err) { exit 1i32; };
+
+func:assert_tok = bool(LexResult:res, int64:expected_type, string:expected_text) {
+    if (res.tok.type != expected_type) {
+        drop(print_line("[FAIL] Token type mismatch.\n"));
+        pass(false);
+    }
+    if (res.tok.text != expected_text) {
+        drop(print_line("[FAIL] Token text mismatch.\n"));
+        pass(false);
+    }
+    pass(true);
+};
+
+func:main = int32() {
+    string:input = "12.34 + (5 * 6) / 7.0 - 8";
+    int64:pos = 0i64;
+    LexResult:res;
+    
+    res = raw lex_next(input, pos); pos = res.next_pos;
+    if (raw assert_tok(res, raw TOK_NUMBER(), "12.34") == false) { exit 1i32; }
+    
+    res = raw lex_next(input, pos); pos = res.next_pos;
+    if (raw assert_tok(res, raw TOK_PLUS(), "+") == false) { exit 2i32; }
+    
+    res = raw lex_next(input, pos); pos = res.next_pos;
+    if (raw assert_tok(res, raw TOK_LPAREN(), "(") == false) { exit 3i32; }
+    
+    res = raw lex_next(input, pos); pos = res.next_pos;
+    if (raw assert_tok(res, raw TOK_NUMBER(), "5") == false) { exit 4i32; }
+    
+    res = raw lex_next(input, pos); pos = res.next_pos;
+    if (raw assert_tok(res, raw TOK_MUL(), "*") == false) { exit 5i32; }
+    
+    res = raw lex_next(input, pos); pos = res.next_pos;
+    if (raw assert_tok(res, raw TOK_NUMBER(), "6") == false) { exit 6i32; }
+    
+    res = raw lex_next(input, pos); pos = res.next_pos;
+    if (raw assert_tok(res, raw TOK_RPAREN(), ")") == false) { exit 7i32; }
+    
+    res = raw lex_next(input, pos); pos = res.next_pos;
+    if (raw assert_tok(res, raw TOK_DIV(), "/") == false) { exit 8i32; }
+    
+    res = raw lex_next(input, pos); pos = res.next_pos;
+    if (raw assert_tok(res, raw TOK_NUMBER(), "7.0") == false) { exit 9i32; }
+    
+    res = raw lex_next(input, pos); pos = res.next_pos;
+    if (raw assert_tok(res, raw TOK_MINUS(), "-") == false) { exit 10i32; }
+    
+    res = raw lex_next(input, pos); pos = res.next_pos;
+    if (raw assert_tok(res, raw TOK_NUMBER(), "8") == false) { exit 11i32; }
+    
+    res = raw lex_next(input, pos); pos = res.next_pos;
+    if (raw assert_tok(res, raw TOK_EOF(), "") == false) { exit 12i32; }
+    
+    drop(print_line("[PASS] T02 lexer comprehensive tests\n"));
+    exit 0i32;
+};

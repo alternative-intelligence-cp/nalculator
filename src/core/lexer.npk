@@ -1,0 +1,153 @@
+pub func:TOK_EOF    = int64() { pass(0i64); };
+pub func:TOK_NUMBER = int64() { pass(1i64); };
+pub func:TOK_PLUS   = int64() { pass(2i64); };
+pub func:TOK_MINUS  = int64() { pass(3i64); };
+pub func:TOK_MUL    = int64() { pass(4i64); };
+pub func:TOK_DIV    = int64() { pass(5i64); };
+pub func:TOK_LPAREN = int64() { pass(6i64); };
+pub func:TOK_RPAREN = int64() { pass(7i64); };
+pub func:TOK_ERROR  = int64() { pass(8i64); };
+
+pub struct:Token = {
+    int64:type;
+    string:text;
+};
+
+pub struct:LexResult = {
+    Token:tok;
+    int64:next_pos;
+};
+
+func:str_char_at = string(string:s, int64:i) {
+    int64:len = string_length(s);
+    if (i < 0i64) { pass(""); }
+    if (i >= len) { pass(""); }
+    int64:end_pos = i + 1i64;
+    pass(string_substring(s, i, end_pos));
+};
+
+func:is_digit = bool(string:c) {
+    if (c == "0") { pass(true); }
+    if (c == "1") { pass(true); }
+    if (c == "2") { pass(true); }
+    if (c == "3") { pass(true); }
+    if (c == "4") { pass(true); }
+    if (c == "5") { pass(true); }
+    if (c == "6") { pass(true); }
+    if (c == "7") { pass(true); }
+    if (c == "8") { pass(true); }
+    if (c == "9") { pass(true); }
+    pass(false);
+};
+
+func:is_space = bool(string:c) {
+    if (c == " ") { pass(true); }
+    if (c == "\t") { pass(true); }
+    if (c == "\n") { pass(true); }
+    if (c == "\r") { pass(true); }
+    pass(false);
+};
+
+pub func:lex_next = LexResult(string:input, int64:start_pos) {
+    int64:len = string_length(input);
+    int64:pos = start_pos;
+    
+    bool:skipping = true;
+    while (skipping) {
+        if (pos < len) {
+            string:c = raw str_char_at(input, pos);
+            if (raw is_space(c)) {
+                pos = pos + 1i64;
+            } else {
+                skipping = false;
+            }
+        } else {
+            skipping = false;
+        }
+    }
+    
+    LexResult:res;
+    
+    if (pos >= len) {
+        res.tok.type = raw TOK_EOF();
+        res.tok.text = "";
+        res.next_pos = pos;
+        pass(res);
+    }
+    
+    string:c = raw str_char_at(input, pos);
+    
+    if (c == "+") {
+        res.tok.type = raw TOK_PLUS();
+        res.tok.text = "+";
+        res.next_pos = pos + 1i64;
+        pass(res);
+    }
+    if (c == "-") {
+        res.tok.type = raw TOK_MINUS();
+        res.tok.text = "-";
+        res.next_pos = pos + 1i64;
+        pass(res);
+    }
+    if (c == "*") {
+        res.tok.type = raw TOK_MUL();
+        res.tok.text = "*";
+        res.next_pos = pos + 1i64;
+        pass(res);
+    }
+    if (c == "/") {
+        res.tok.type = raw TOK_DIV();
+        res.tok.text = "/";
+        res.next_pos = pos + 1i64;
+        pass(res);
+    }
+    if (c == "(") {
+        res.tok.type = raw TOK_LPAREN();
+        res.tok.text = "(";
+        res.next_pos = pos + 1i64;
+        pass(res);
+    }
+    if (c == ")") {
+        res.tok.type = raw TOK_RPAREN();
+        res.tok.text = ")";
+        res.next_pos = pos + 1i64;
+        pass(res);
+    }
+    
+    if (raw is_digit(c)) {
+        int64:start = pos;
+        bool:reading = true;
+        bool:has_dot = false;
+        
+        while (reading) {
+            if (pos < len) {
+                string:peek = raw str_char_at(input, pos);
+                if (raw is_digit(peek)) {
+                    pos = pos + 1i64;
+                } else {
+                    if (peek == ".") {
+                        if (has_dot) {
+                            reading = false;
+                        } else {
+                            has_dot = true;
+                            pos = pos + 1i64;
+                        }
+                    } else {
+                        reading = false;
+                    }
+                }
+            } else {
+                reading = false;
+            }
+        }
+        res.tok.type = raw TOK_NUMBER();
+        res.tok.text = string_substring(input, start, pos);
+        res.next_pos = pos;
+        pass(res);
+    }
+    
+    res.tok.type = raw TOK_ERROR();
+    res.tok.text = raw str_char_at(input, pos);
+    res.next_pos = pos + 1i64;
+    pass(res);
+};
