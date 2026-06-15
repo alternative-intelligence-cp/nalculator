@@ -1,3 +1,5 @@
+use "nitpick_gtk4.npk".*;
+
 int64:STDOUT = 1i64;
 
 func:print_line = NIL(string:msg) {
@@ -9,6 +11,31 @@ func:print_line = NIL(string:msg) {
 func:failsafe = int32(tbb32:_err) { exit 1i32; };
 
 func:main = int32() {
-    drop(print_line("Welcome to Nalculator!\n"));
+    drop(print_line("Initializing Nalculator GUI...\n"));
+    
+    int32:init_res = raw gtk4_init("com.randy.nalculator");
+    if (init_res != 1i32) {
+        drop(print_line("Failed to initialize GTK4.\n"));
+        exit 1i32;
+    }
+    
+    raw gtk4_run();
+    
+    raw gtk4_set_title("Nalculator");
+    raw gtk4_set_default_size(400i32, 600i32);
+    raw gtk4_load_css("");
+    
+    raw gtk4_window_present();
+
+    while (raw gtk4_is_running() != 0i32) {
+        int32:has_events = raw gtk4_iterate(1i32);
+        if (has_events != 0i32) {
+            int32:event = raw gtk4_get_last_event();
+            if (event == raw GTK_EVT_DESTROY()) {
+                raw gtk4_quit();
+            }
+        }
+    }
+    
     exit 0i32;
 };
