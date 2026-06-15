@@ -160,7 +160,6 @@ func:main = int32() {
     
     raw gtk4_box_append(main_hbox, calc_vbox);
     raw gtk4_box_append(main_hbox, history_sw);
-    raw gtk4_box_append(vbox, main_hbox);
     
     raw gtk4_widget_set_visible(sci_grid, 0i32); // Hide by default
     
@@ -178,6 +177,27 @@ func:main = int32() {
             int32:event = raw gtk4_get_last_event();
             if (event == raw GTK_EVT_DESTROY()) {
                 raw gtk4_quit();
+            } else {
+            if (event == raw GTK_EVT_LIST_BOX_ROW_ACTIVATED()) {
+                int32:child_id = raw gtk4_get_last_activated_list_box_row_child();
+                string:text = raw gtk4_label_get_text(child_id);
+                int64:len = string_length(text);
+                if (len > 3i64) {
+                    int64:eq_pos = -1i64;
+                    int64:i = 0i64;
+                    while (i < len - 2i64) {
+                        if (string_substring(text, i, i + 3i64) == " = ") {
+                            eq_pos = i;
+                        }
+                        i = i + 1i64;
+                    }
+                    if (eq_pos != -1i64) {
+                        string:ans = string_substring(text, eq_pos + 3i64, len);
+                        state = raw fsm_clear(state);
+                        state = raw fsm_append_text(state, ans);
+                        raw gtk4_entry_set_text(entry_id, state.expr);
+                    }
+                }
             } else {
             if (event == raw GTK_EVT_CLICKED()) {
                 int32:btn = raw gtk4_get_last_clicked_button();
@@ -301,7 +321,7 @@ func:main = int32() {
                     state = raw fsm_append_text(state, append_char);
                     raw gtk4_entry_set_text(entry_id, state.expr);
                 }
-            }}
+            }}}
         }
     }
     
