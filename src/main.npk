@@ -26,6 +26,10 @@ func:main = int32() {
     
     raw gtk4_set_title("Nalculator");
     raw gtk4_set_default_size(400i32, 600i32);
+    raw gtk4_window_set_header_bar();
+    
+    int32:btn_mode = raw gtk4_add_button("Mode: Standard");
+    raw gtk4_header_bar_pack_end(btn_mode);
     
     raw gtk4_load_css("entry.display { font-size: 32px; font-weight: bold; padding: 20px; } grid.keypad { margin: 10px; } grid.keypad button { font-size: 24px; padding: 15px; margin: 2px; }");
     
@@ -33,59 +37,99 @@ func:main = int32() {
     int32:entry_id = raw gtk4_add_entry("0");
     raw gtk4_widget_add_css_class(entry_id, "display");
     
-    // Add keypad grid
-    int32:grid_id = raw gtk4_add_grid();
-    raw gtk4_widget_add_css_class(grid_id, "keypad");
+    // Add keypad container
+    int32:keypad_box = raw gtk4_add_box(raw GTK_ORIENTATION_HORIZONTAL(), 10i32);
+    
+    // -------------------------------------------------------------
+    // SCIENTIFIC GRID
+    // -------------------------------------------------------------
+    int32:sci_grid = raw gtk4_add_grid();
+    raw gtk4_widget_add_css_class(sci_grid, "keypad");
+    
+    int32:btn_sin  = raw gtk4_add_button("sin");
+    int32:btn_cos  = raw gtk4_add_button("cos");
+    int32:btn_tan  = raw gtk4_add_button("tan");
+    int32:btn_pow  = raw gtk4_add_button("^");
+    int32:btn_sqrt = raw gtk4_add_button("sqrt");
+    int32:btn_pi   = raw gtk4_add_button("pi");
+    int32:btn_e    = raw gtk4_add_button("e");
+    int32:btn_lpar = raw gtk4_add_button("(");
+    int32:btn_rpar = raw gtk4_add_button(")");
+    
+    raw gtk4_grid_attach(sci_grid, btn_sin,  0i32, 0i32, 1i32, 1i32);
+    raw gtk4_grid_attach(sci_grid, btn_cos,  1i32, 0i32, 1i32, 1i32);
+    raw gtk4_grid_attach(sci_grid, btn_tan,  2i32, 0i32, 1i32, 1i32);
+    
+    raw gtk4_grid_attach(sci_grid, btn_pow,  0i32, 1i32, 1i32, 1i32);
+    raw gtk4_grid_attach(sci_grid, btn_sqrt, 1i32, 1i32, 1i32, 1i32);
+    raw gtk4_grid_attach(sci_grid, btn_pi,   2i32, 1i32, 1i32, 1i32);
+    
+    raw gtk4_grid_attach(sci_grid, btn_e,    0i32, 2i32, 1i32, 1i32);
+    raw gtk4_grid_attach(sci_grid, btn_lpar, 1i32, 2i32, 1i32, 1i32);
+    raw gtk4_grid_attach(sci_grid, btn_rpar, 2i32, 2i32, 1i32, 1i32);
+    
+    // -------------------------------------------------------------
+    // STANDARD GRID
+    // -------------------------------------------------------------
+    int32:std_grid = raw gtk4_add_grid();
+    raw gtk4_widget_add_css_class(std_grid, "keypad");
     
     // Row 0
     int32:btn_ac = raw gtk4_add_button("AC");
     int32:btn_c  = raw gtk4_add_button("C");
     int32:btn_div= raw gtk4_add_button("/");
-    raw gtk4_grid_attach(grid_id, btn_ac, 0i32, 0i32, 1i32, 1i32);
-    raw gtk4_grid_attach(grid_id, btn_c,  1i32, 0i32, 1i32, 1i32);
-    raw gtk4_grid_attach(grid_id, btn_div, 3i32, 0i32, 1i32, 1i32);
+    raw gtk4_grid_attach(std_grid, btn_ac, 0i32, 0i32, 1i32, 1i32);
+    raw gtk4_grid_attach(std_grid, btn_c,  1i32, 0i32, 1i32, 1i32);
+    raw gtk4_grid_attach(std_grid, btn_div, 3i32, 0i32, 1i32, 1i32);
     
     // Row 1
     int32:btn_7  = raw gtk4_add_button("7");
     int32:btn_8  = raw gtk4_add_button("8");
     int32:btn_9  = raw gtk4_add_button("9");
     int32:btn_mul= raw gtk4_add_button("*");
-    raw gtk4_grid_attach(grid_id, btn_7,   0i32, 1i32, 1i32, 1i32);
-    raw gtk4_grid_attach(grid_id, btn_8,   1i32, 1i32, 1i32, 1i32);
-    raw gtk4_grid_attach(grid_id, btn_9,   2i32, 1i32, 1i32, 1i32);
-    raw gtk4_grid_attach(grid_id, btn_mul, 3i32, 1i32, 1i32, 1i32);
+    raw gtk4_grid_attach(std_grid, btn_7,   0i32, 1i32, 1i32, 1i32);
+    raw gtk4_grid_attach(std_grid, btn_8,   1i32, 1i32, 1i32, 1i32);
+    raw gtk4_grid_attach(std_grid, btn_9,   2i32, 1i32, 1i32, 1i32);
+    raw gtk4_grid_attach(std_grid, btn_mul, 3i32, 1i32, 1i32, 1i32);
     
     // Row 2
     int32:btn_4  = raw gtk4_add_button("4");
     int32:btn_5  = raw gtk4_add_button("5");
     int32:btn_6  = raw gtk4_add_button("6");
     int32:btn_sub= raw gtk4_add_button("-");
-    raw gtk4_grid_attach(grid_id, btn_4,   0i32, 2i32, 1i32, 1i32);
-    raw gtk4_grid_attach(grid_id, btn_5,   1i32, 2i32, 1i32, 1i32);
-    raw gtk4_grid_attach(grid_id, btn_6,   2i32, 2i32, 1i32, 1i32);
-    raw gtk4_grid_attach(grid_id, btn_sub, 3i32, 2i32, 1i32, 1i32);
+    raw gtk4_grid_attach(std_grid, btn_4,   0i32, 2i32, 1i32, 1i32);
+    raw gtk4_grid_attach(std_grid, btn_5,   1i32, 2i32, 1i32, 1i32);
+    raw gtk4_grid_attach(std_grid, btn_6,   2i32, 2i32, 1i32, 1i32);
+    raw gtk4_grid_attach(std_grid, btn_sub, 3i32, 2i32, 1i32, 1i32);
     
     // Row 3
     int32:btn_1  = raw gtk4_add_button("1");
     int32:btn_2  = raw gtk4_add_button("2");
     int32:btn_3  = raw gtk4_add_button("3");
     int32:btn_add= raw gtk4_add_button("+");
-    raw gtk4_grid_attach(grid_id, btn_1,   0i32, 3i32, 1i32, 1i32);
-    raw gtk4_grid_attach(grid_id, btn_2,   1i32, 3i32, 1i32, 1i32);
-    raw gtk4_grid_attach(grid_id, btn_3,   2i32, 3i32, 1i32, 1i32);
-    raw gtk4_grid_attach(grid_id, btn_add, 3i32, 3i32, 1i32, 1i32);
+    raw gtk4_grid_attach(std_grid, btn_1,   0i32, 3i32, 1i32, 1i32);
+    raw gtk4_grid_attach(std_grid, btn_2,   1i32, 3i32, 1i32, 1i32);
+    raw gtk4_grid_attach(std_grid, btn_3,   2i32, 3i32, 1i32, 1i32);
+    raw gtk4_grid_attach(std_grid, btn_add, 3i32, 3i32, 1i32, 1i32);
     
     // Row 4
     int32:btn_0  = raw gtk4_add_button("0");
     int32:btn_dot= raw gtk4_add_button(".");
     int32:btn_eq = raw gtk4_add_button("=");
-    raw gtk4_grid_attach(grid_id, btn_0,   0i32, 4i32, 2i32, 1i32);
-    raw gtk4_grid_attach(grid_id, btn_dot, 2i32, 4i32, 1i32, 1i32);
-    raw gtk4_grid_attach(grid_id, btn_eq,  3i32, 4i32, 1i32, 1i32);
+    raw gtk4_grid_attach(std_grid, btn_0,   0i32, 4i32, 2i32, 1i32);
+    raw gtk4_grid_attach(std_grid, btn_dot, 2i32, 4i32, 1i32, 1i32);
+    raw gtk4_grid_attach(std_grid, btn_eq,  3i32, 4i32, 1i32, 1i32);
+    
+    raw gtk4_box_append(keypad_box, sci_grid);
+    raw gtk4_box_append(keypad_box, std_grid);
+    
+    raw gtk4_widget_set_visible(sci_grid, 0i32); // Hide by default
     
     // Initialize FSM
     InputState:state = raw fsm_init();
     raw gtk4_entry_set_text(entry_id, "");
+    
+    bool:is_scientific = false;
     
     raw gtk4_window_present();
 
@@ -101,6 +145,17 @@ func:main = int32() {
                 string:append_char = "";
                 bool:should_append = false;
                 
+                if (btn == btn_mode) {
+                    if (is_scientific) {
+                        is_scientific = false;
+                        raw gtk4_button_set_label(btn_mode, "Mode: Standard");
+                        raw gtk4_widget_set_visible(sci_grid, 0i32);
+                    } else {
+                        is_scientific = true;
+                        raw gtk4_button_set_label(btn_mode, "Mode: Scientific");
+                        raw gtk4_widget_set_visible(sci_grid, 1i32);
+                    }
+                } else {
                 if (btn == btn_ac) {
                     state = raw fsm_clear(state);
                     raw gtk4_entry_set_text(entry_id, "");
@@ -135,9 +190,18 @@ func:main = int32() {
                     if (btn == btn_add) { append_char = "+"; should_append = true; } else {
                     if (btn == btn_sub) { append_char = "-"; should_append = true; } else {
                     if (btn == btn_mul) { append_char = "*"; should_append = true; } else {
-                    if (btn == btn_div) { append_char = "/"; should_append = true; }
-                    }}}}}}}}}}}}}}}
-                }}}
+                    if (btn == btn_div) { append_char = "/"; should_append = true; } else {
+                    if (btn == btn_sin) { append_char = "sin("; should_append = true; } else {
+                    if (btn == btn_cos) { append_char = "cos("; should_append = true; } else {
+                    if (btn == btn_tan) { append_char = "tan("; should_append = true; } else {
+                    if (btn == btn_pow) { append_char = "^"; should_append = true; } else {
+                    if (btn == btn_sqrt){ append_char = "sqrt("; should_append = true; } else {
+                    if (btn == btn_pi)  { append_char = "pi"; should_append = true; } else {
+                    if (btn == btn_e)   { append_char = "e"; should_append = true; } else {
+                    if (btn == btn_lpar){ append_char = "("; should_append = true; } else {
+                    if (btn == btn_rpar){ append_char = ")"; should_append = true; }
+                    }}}}}}}}}}}}}}}}}}}}}}}
+                }}}}
                 
                 if (should_append) {
                     state = raw fsm_append_text(state, append_char);
