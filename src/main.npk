@@ -37,8 +37,14 @@ func:main = int32() {
     int32:entry_id = raw gtk4_add_entry("0");
     raw gtk4_widget_add_css_class(entry_id, "display");
     
-    // Add keypad container
-    int32:keypad_box = raw gtk4_add_box(raw GTK_ORIENTATION_HORIZONTAL(), 10i32);
+    // Layout containers
+    int32:main_hbox = raw gtk4_add_box(raw GTK_ORIENTATION_HORIZONTAL(), 10i32);
+    int32:calc_vbox = raw gtk4_add_box(raw GTK_ORIENTATION_VERTICAL(), 5i32);
+    
+    // History Tape UI
+    int32:history_sw = raw gtk4_add_scrolled_window();
+    int32:history_lb = raw gtk4_add_list_box();
+    raw gtk4_scrolled_window_set_child(history_sw, history_lb);
     
     // -------------------------------------------------------------
     // SCIENTIFIC GRID
@@ -146,11 +152,15 @@ func:main = int32() {
     raw gtk4_grid_attach(std_grid, btn_dot, 2i32, 4i32, 1i32, 1i32);
     raw gtk4_grid_attach(std_grid, btn_eq,  3i32, 4i32, 1i32, 1i32);
     
-    raw gtk4_box_append(vbox, entry_id);
-    raw gtk4_box_append(vbox, btn_mode);
-    raw gtk4_box_append(vbox, mem_grid);
-    raw gtk4_box_append(vbox, sci_grid);
-    raw gtk4_box_append(vbox, std_grid);
+    raw gtk4_box_append(calc_vbox, entry_id);
+    raw gtk4_box_append(calc_vbox, btn_mode);
+    raw gtk4_box_append(calc_vbox, mem_grid);
+    raw gtk4_box_append(calc_vbox, sci_grid);
+    raw gtk4_box_append(calc_vbox, std_grid);
+    
+    raw gtk4_box_append(main_hbox, calc_vbox);
+    raw gtk4_box_append(main_hbox, history_sw);
+    raw gtk4_box_append(vbox, main_hbox);
     
     raw gtk4_widget_set_visible(sci_grid, 0i32); // Hide by default
     
@@ -214,6 +224,13 @@ func:main = int32() {
                         should_append = false;
                     } else {
                         string:ans = raw gtk4_float_to_string(res.val);
+                        
+                        // Push history string
+                        string:hist_str = string_concat(state.expr, " = ");
+                        hist_str = string_concat(hist_str, ans);
+                        int32:hist_label = raw gtk4_add_label(hist_str);
+                        raw gtk4_list_box_append(history_lb, hist_label);
+                        
                         state = raw fsm_clear(state);
                         state = raw fsm_append_text(state, ans);
                         raw gtk4_entry_set_text(entry_id, state.expr);
@@ -277,7 +294,7 @@ func:main = int32() {
                     if (btn == btn_e)   { append_char = "e"; should_append = true; } else {
                     if (btn == btn_lpar){ append_char = "("; should_append = true; } else {
                     if (btn == btn_rpar){ append_char = ")"; should_append = true; }
-                    }}}}}}}}}}}}}}}}}}}}}}}}}}
+                    }}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}
                 }}}}
                 
                 if (should_append) {
