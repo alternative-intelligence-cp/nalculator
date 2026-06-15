@@ -53,20 +53,32 @@ func:main = int32() {
     raw gtk4_widget_add_css_class(sci_grid, "keypad");
     
     int32:btn_sin  = raw gtk4_add_button("sin");
+    raw gtk4_widget_add_css_class(btn_sin, "btn-operator");
     int32:btn_cos  = raw gtk4_add_button("cos");
+    raw gtk4_widget_add_css_class(btn_cos, "btn-operator");
     int32:btn_tan  = raw gtk4_add_button("tan");
+    raw gtk4_widget_add_css_class(btn_tan, "btn-operator");
     int32:btn_log  = raw gtk4_add_button("log");
+    raw gtk4_widget_add_css_class(btn_log, "btn-operator");
     
     int32:btn_pow  = raw gtk4_add_button("^");
+    raw gtk4_widget_add_css_class(btn_pow, "btn-operator");
     int32:btn_sqrt = raw gtk4_add_button("sqrt");
+    raw gtk4_widget_add_css_class(btn_sqrt, "btn-operator");
     int32:btn_pi   = raw gtk4_add_button("pi");
+    raw gtk4_widget_add_css_class(btn_pi, "btn-operator");
     int32:btn_ln   = raw gtk4_add_button("ln");
+    raw gtk4_widget_add_css_class(btn_ln, "btn-operator");
     
     int32:btn_e    = raw gtk4_add_button("e");
+    raw gtk4_widget_add_css_class(btn_e, "btn-operator");
     int32:btn_lpar = raw gtk4_add_button("(");
+    raw gtk4_widget_add_css_class(btn_lpar, "btn-operator");
     int32:btn_rpar = raw gtk4_add_button(")");
+    raw gtk4_widget_add_css_class(btn_rpar, "btn-operator");
     
     int32:btn_angle_mode = raw gtk4_add_button("Rad");
+    raw gtk4_widget_add_css_class(btn_angle_mode, "btn-operator");
     
     // -------------------------------------------------------------
     // MEMORY GRID
@@ -74,10 +86,15 @@ func:main = int32() {
     int32:mem_grid = raw gtk4_add_grid();
     raw gtk4_widget_add_css_class(mem_grid, "keypad");
     int32:btn_mc = raw gtk4_add_button("MC");
+    raw gtk4_widget_add_css_class(btn_mc, "btn-operator");
     int32:btn_mr = raw gtk4_add_button("MR");
+    raw gtk4_widget_add_css_class(btn_mr, "btn-operator");
     int32:btn_mplus = raw gtk4_add_button("M+");
+    raw gtk4_widget_add_css_class(btn_mplus, "btn-operator");
     int32:btn_mminus = raw gtk4_add_button("M-");
+    raw gtk4_widget_add_css_class(btn_mminus, "btn-operator");
     int32:btn_ms = raw gtk4_add_button("MS");
+    raw gtk4_widget_add_css_class(btn_ms, "btn-operator");
     raw gtk4_grid_attach(mem_grid, btn_mc, 0i32, 0i32, 1i32, 1i32);
     raw gtk4_grid_attach(mem_grid, btn_mr, 1i32, 0i32, 1i32, 1i32);
     raw gtk4_grid_attach(mem_grid, btn_mplus, 2i32, 0i32, 1i32, 1i32);
@@ -108,17 +125,24 @@ func:main = int32() {
     
     // Row 0
     int32:btn_ac = raw gtk4_add_button("AC");
+    raw gtk4_widget_add_css_class(btn_ac, "btn-operator");
     int32:btn_c  = raw gtk4_add_button("C");
+    raw gtk4_widget_add_css_class(btn_c, "btn-operator");
     int32:btn_div= raw gtk4_add_button("/");
+    raw gtk4_widget_add_css_class(btn_div, "btn-operator");
     raw gtk4_grid_attach(std_grid, btn_ac, 0i32, 0i32, 1i32, 1i32);
     raw gtk4_grid_attach(std_grid, btn_c,  1i32, 0i32, 1i32, 1i32);
     raw gtk4_grid_attach(std_grid, btn_div, 3i32, 0i32, 1i32, 1i32);
     
     // Row 1
     int32:btn_7  = raw gtk4_add_button("7");
+    raw gtk4_widget_add_css_class(btn_7, "btn-number");
     int32:btn_8  = raw gtk4_add_button("8");
+    raw gtk4_widget_add_css_class(btn_8, "btn-number");
     int32:btn_9  = raw gtk4_add_button("9");
+    raw gtk4_widget_add_css_class(btn_9, "btn-number");
     int32:btn_mul= raw gtk4_add_button("*");
+    raw gtk4_widget_add_css_class(btn_mul, "btn-operator");
     raw gtk4_grid_attach(std_grid, btn_7,   0i32, 1i32, 1i32, 1i32);
     raw gtk4_grid_attach(std_grid, btn_8,   1i32, 1i32, 1i32, 1i32);
     raw gtk4_grid_attach(std_grid, btn_9,   2i32, 1i32, 1i32, 1i32);
@@ -126,9 +150,13 @@ func:main = int32() {
     
     // Row 2
     int32:btn_4  = raw gtk4_add_button("4");
+    raw gtk4_widget_add_css_class(btn_4, "btn-number");
     int32:btn_5  = raw gtk4_add_button("5");
+    raw gtk4_widget_add_css_class(btn_5, "btn-number");
     int32:btn_6  = raw gtk4_add_button("6");
+    raw gtk4_widget_add_css_class(btn_6, "btn-number");
     int32:btn_sub= raw gtk4_add_button("-");
+    raw gtk4_widget_add_css_class(btn_sub, "btn-operator");
     raw gtk4_grid_attach(std_grid, btn_4,   0i32, 2i32, 1i32, 1i32);
     raw gtk4_grid_attach(std_grid, btn_5,   1i32, 2i32, 1i32, 1i32);
     raw gtk4_grid_attach(std_grid, btn_6,   2i32, 2i32, 1i32, 1i32);
@@ -136,9 +164,13 @@ func:main = int32() {
     
     // Row 3
     int32:btn_1  = raw gtk4_add_button("1");
+    raw gtk4_widget_add_css_class(btn_1, "btn-number");
     int32:btn_2  = raw gtk4_add_button("2");
+    raw gtk4_widget_add_css_class(btn_2, "btn-number");
     int32:btn_3  = raw gtk4_add_button("3");
+    raw gtk4_widget_add_css_class(btn_3, "btn-number");
     int32:btn_add= raw gtk4_add_button("+");
+    raw gtk4_widget_add_css_class(btn_add, "btn-operator");
     raw gtk4_grid_attach(std_grid, btn_1,   0i32, 3i32, 1i32, 1i32);
     raw gtk4_grid_attach(std_grid, btn_2,   1i32, 3i32, 1i32, 1i32);
     raw gtk4_grid_attach(std_grid, btn_3,   2i32, 3i32, 1i32, 1i32);
@@ -146,8 +178,11 @@ func:main = int32() {
     
     // Row 4
     int32:btn_0  = raw gtk4_add_button("0");
+    raw gtk4_widget_add_css_class(btn_0, "btn-number");
     int32:btn_dot= raw gtk4_add_button(".");
+    raw gtk4_widget_add_css_class(btn_dot, "btn-number");
     int32:btn_eq = raw gtk4_add_button("=");
+    raw gtk4_widget_add_css_class(btn_eq, "btn-equals");
     raw gtk4_grid_attach(std_grid, btn_0,   0i32, 4i32, 2i32, 1i32);
     raw gtk4_grid_attach(std_grid, btn_dot, 2i32, 4i32, 1i32, 1i32);
     raw gtk4_grid_attach(std_grid, btn_eq,  3i32, 4i32, 1i32, 1i32);
