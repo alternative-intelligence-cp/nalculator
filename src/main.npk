@@ -25,11 +25,61 @@ func:main = int32() {
     raw gtk4_set_title("Nalculator");
     raw gtk4_set_default_size(400i32, 600i32);
     
-    raw gtk4_load_css("entry { font-size: 32px; font-weight: bold; padding: 20px; }");
+    raw gtk4_load_css("entry.display { font-size: 32px; font-weight: bold; padding: 20px; } grid.keypad { margin: 10px; } grid.keypad button { font-size: 24px; padding: 15px; margin: 2px; }");
     
     // Add the main display entry
     int32:entry_id = raw gtk4_add_entry("0");
     raw gtk4_widget_add_css_class(entry_id, "display");
+    
+    // Add keypad grid
+    int32:grid_id = raw gtk4_add_grid();
+    raw gtk4_widget_add_css_class(grid_id, "keypad");
+    
+    // Row 0
+    int32:btn_ac = raw gtk4_add_button("AC");
+    int32:btn_c  = raw gtk4_add_button("C");
+    int32:btn_div= raw gtk4_add_button("/");
+    raw gtk4_grid_attach(grid_id, btn_ac, 0i32, 0i32, 1i32, 1i32);
+    raw gtk4_grid_attach(grid_id, btn_c,  1i32, 0i32, 1i32, 1i32);
+    raw gtk4_grid_attach(grid_id, btn_div, 3i32, 0i32, 1i32, 1i32);
+    
+    // Row 1
+    int32:btn_7  = raw gtk4_add_button("7");
+    int32:btn_8  = raw gtk4_add_button("8");
+    int32:btn_9  = raw gtk4_add_button("9");
+    int32:btn_mul= raw gtk4_add_button("*");
+    raw gtk4_grid_attach(grid_id, btn_7,   0i32, 1i32, 1i32, 1i32);
+    raw gtk4_grid_attach(grid_id, btn_8,   1i32, 1i32, 1i32, 1i32);
+    raw gtk4_grid_attach(grid_id, btn_9,   2i32, 1i32, 1i32, 1i32);
+    raw gtk4_grid_attach(grid_id, btn_mul, 3i32, 1i32, 1i32, 1i32);
+    
+    // Row 2
+    int32:btn_4  = raw gtk4_add_button("4");
+    int32:btn_5  = raw gtk4_add_button("5");
+    int32:btn_6  = raw gtk4_add_button("6");
+    int32:btn_sub= raw gtk4_add_button("-");
+    raw gtk4_grid_attach(grid_id, btn_4,   0i32, 2i32, 1i32, 1i32);
+    raw gtk4_grid_attach(grid_id, btn_5,   1i32, 2i32, 1i32, 1i32);
+    raw gtk4_grid_attach(grid_id, btn_6,   2i32, 2i32, 1i32, 1i32);
+    raw gtk4_grid_attach(grid_id, btn_sub, 3i32, 2i32, 1i32, 1i32);
+    
+    // Row 3
+    int32:btn_1  = raw gtk4_add_button("1");
+    int32:btn_2  = raw gtk4_add_button("2");
+    int32:btn_3  = raw gtk4_add_button("3");
+    int32:btn_add= raw gtk4_add_button("+");
+    raw gtk4_grid_attach(grid_id, btn_1,   0i32, 3i32, 1i32, 1i32);
+    raw gtk4_grid_attach(grid_id, btn_2,   1i32, 3i32, 1i32, 1i32);
+    raw gtk4_grid_attach(grid_id, btn_3,   2i32, 3i32, 1i32, 1i32);
+    raw gtk4_grid_attach(grid_id, btn_add, 3i32, 3i32, 1i32, 1i32);
+    
+    // Row 4
+    int32:btn_0  = raw gtk4_add_button("0");
+    int32:btn_dot= raw gtk4_add_button(".");
+    int32:btn_eq = raw gtk4_add_button("=");
+    raw gtk4_grid_attach(grid_id, btn_0,   0i32, 4i32, 2i32, 1i32);
+    raw gtk4_grid_attach(grid_id, btn_dot, 2i32, 4i32, 1i32, 1i32);
+    raw gtk4_grid_attach(grid_id, btn_eq,  3i32, 4i32, 1i32, 1i32);
     
     // Initialize FSM
     InputState:state = raw fsm_init();
