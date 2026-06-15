@@ -187,8 +187,13 @@ func:main = int32() {
                 if (btn == btn_eq) {
                     ParseResult:res = raw eval_expression(state.expr, is_degrees);
                     if (res.error) {
-                        raw gtk4_entry_set_text(entry_id, "Error");
+                        string:msg = "Error";
+                        if (string_length(res.error_msg) > 0i64) {
+                            msg = res.error_msg;
+                        }
+                        raw gtk4_entry_set_text(entry_id, msg);
                         state = raw fsm_clear(state);
+                        should_append = false;
                     } else {
                         string:ans = raw gtk4_float_to_string(res.val);
                         state = raw fsm_clear(state);

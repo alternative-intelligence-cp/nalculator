@@ -6,6 +6,7 @@ pub struct:ParseResult = {
     float64:val;
     int64:next_pos;
     bool:error;
+    string:error_msg;
 };
 
 pub func:parse_float64 = float64(string:s) {
@@ -91,17 +92,20 @@ pub func:parse_expr = ParseResult(string:input, int64:pos, int64:min_prec, bool:
         res.val = raw parse_float64(lex.tok.text);
         res.next_pos = p;
         res.error = false;
+        res.error_msg = "";
     } else {
         if (lex.tok.type == raw TOK_IDENTIFIER()) {
             if (lex.tok.text == "pi") {
                 res.val = 3.141592653589793;
                 res.next_pos = p;
                 res.error = false;
+                res.error_msg = "";
             } else {
                 if (lex.tok.text == "e") {
                     res.val = 2.718281828459045;
                     res.next_pos = p;
                     res.error = false;
+                    res.error_msg = "";
                 } else {
                     LexResult:peek_lex = raw lex_next(input, p);
                     if (peek_lex.tok.type == raw TOK_LPAREN()) {
@@ -118,8 +122,10 @@ pub func:parse_expr = ParseResult(string:input, int64:pos, int64:min_prec, bool:
                                 if (lex.tok.text == "atan2") { res.val = atan2(arg1.val, arg2.val); }
                                 res.next_pos = lex_rparen.next_pos;
                                 res.error = false;
+                                res.error_msg = "";
                             } else {
                                 res.error = true;
+                                res.error_msg = "Expected ')'";
                                 pass(res);
                             }
                         } else {
@@ -131,15 +137,15 @@ pub func:parse_expr = ParseResult(string:input, int64:pos, int64:min_prec, bool:
                                 if (lex.tok.text == "cos") { res.val = cos(rad_val); }
                                 if (lex.tok.text == "tan") { res.val = tan(rad_val); }
                                 
-                                if (lex.tok.text == "asin") { res.val = asin(arg1.val); if (is_degrees) { res.val = res.val * 180.0 / 3.141592653589793; } }
-                                if (lex.tok.text == "acos") { res.val = acos(arg1.val); if (is_degrees) { res.val = res.val * 180.0 / 3.141592653589793; } }
+                                if (lex.tok.text == "asin") { if (arg1.val < -1.0) { res.error = true; res.error_msg = "Domain error"; pass(res); } else { if (arg1.val > 1.0) { res.error = true; res.error_msg = "Domain error"; pass(res); } else { res.val = asin(arg1.val); if (is_degrees) { res.val = res.val * 180.0 / 3.141592653589793; } } } }
+                                if (lex.tok.text == "acos") { if (arg1.val < -1.0) { res.error = true; res.error_msg = "Domain error"; pass(res); } else { if (arg1.val > 1.0) { res.error = true; res.error_msg = "Domain error"; pass(res); } else { res.val = acos(arg1.val); if (is_degrees) { res.val = res.val * 180.0 / 3.141592653589793; } } } }
                                 if (lex.tok.text == "atan") { res.val = atan(arg1.val); if (is_degrees) { res.val = res.val * 180.0 / 3.141592653589793; } }
                                 
-                                if (lex.tok.text == "sqrt") { res.val = sqrt(arg1.val); }
-                                if (lex.tok.text == "log") { res.val = log10(arg1.val); }
-                                if (lex.tok.text == "ln") { res.val = log(arg1.val); }
-                                if (lex.tok.text == "log2") { res.val = log2(arg1.val); }
-                                if (lex.tok.text == "log10") { res.val = log10(arg1.val); }
+                                if (lex.tok.text == "sqrt") { if (arg1.val < 0.0) { res.error = true; res.error_msg = "Domain error"; pass(res); } else { res.val = sqrt(arg1.val); } }
+                                if (lex.tok.text == "log") { if (arg1.val <= 0.0) { res.error = true; res.error_msg = "Domain error"; pass(res); } else { res.val = log10(arg1.val); } }
+                                if (lex.tok.text == "ln") { if (arg1.val <= 0.0) { res.error = true; res.error_msg = "Domain error"; pass(res); } else { res.val = log(arg1.val); } }
+                                if (lex.tok.text == "log2") { if (arg1.val <= 0.0) { res.error = true; res.error_msg = "Domain error"; pass(res); } else { res.val = log2(arg1.val); } }
+                                if (lex.tok.text == "log10") { if (arg1.val <= 0.0) { res.error = true; res.error_msg = "Domain error"; pass(res); } else { res.val = log10(arg1.val); } }
                                 if (lex.tok.text == "exp") { res.val = exp(arg1.val); }
                                 if (lex.tok.text == "abs") { res.val = abs(arg1.val); }
                                 if (lex.tok.text == "floor") { res.val = floor(arg1.val); }
@@ -147,13 +153,16 @@ pub func:parse_expr = ParseResult(string:input, int64:pos, int64:min_prec, bool:
                                 if (lex.tok.text == "round") { res.val = round(arg1.val); }
                                 res.next_pos = peek_comma.next_pos;
                                 res.error = false;
+                                res.error_msg = "";
                             } else {
                                 res.error = true;
+                                res.error_msg = "Expected ')'";
                                 pass(res);
                             }
                         }
                     } else {
                         res.error = true;
+                        res.error_msg = "Expected '('";
                         pass(res);
                     }
                 }
@@ -181,8 +190,10 @@ pub func:parse_expr = ParseResult(string:input, int64:pos, int64:min_prec, bool:
                 res.val = 0.0 - inner.val;
                 res.next_pos = inner.next_pos;
                 res.error = false;
+                res.error_msg = "";
             } else {
                 res.error = true;
+                res.error_msg = "Unexpected token";
                 pass(res);
             }
             }
@@ -214,6 +225,11 @@ pub func:parse_expr = ParseResult(string:input, int64:pos, int64:min_prec, bool:
                     res.val = res.val * rhs.val;
                 }
                 if (op_lex.tok.type == raw TOK_DIV()) {
+                    if (rhs.val == 0.0) {
+                        res.error = true;
+                        res.error_msg = "Division by zero";
+                        pass(res);
+                    }
                     res.val = res.val / rhs.val;
                 }
                 res.next_pos = rhs.next_pos;

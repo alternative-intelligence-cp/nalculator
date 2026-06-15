@@ -27,6 +27,22 @@ func:assert_eval = bool(string:expr, float64:expected, bool:is_degrees) {
     pass(true);
 };
 
+func:assert_error = bool(string:expr, string:expected_msg) {
+    ParseResult:res = raw eval_expression(expr, false);
+    if (res.error == false) {
+        drop(print_line("[FAIL] Parser did not return error for: "));
+        drop(print_line(expr));
+        drop(print_line("\n"));
+        pass(false);
+    }
+    
+    if (res.error_msg != expected_msg) {
+        drop(print_line("[FAIL] Parser error msg did not match expected.\n"));
+        pass(false);
+    }
+    pass(true);
+};
+
 func:main = int32() {
     if (raw assert_eval("2 + 3", 5.0, false) == false) { exit 1i32; }
     if (raw assert_eval("2 + 3 * 4", 14.0, false) == false) { exit 2i32; }
@@ -48,6 +64,16 @@ func:main = int32() {
     // Degree math tests
     if (raw assert_eval("sin(90.0)", 1.0, true) == false) { exit 15i32; }
     if (raw assert_eval("asin(1.0)", 90.0, true) == false) { exit 16i32; }
+
+    // Error handling tests
+    drop(print_line("Running 1 / 0.0\n"));
+    if (raw assert_error("1 / 0.0", "Division by zero") == false) { exit 17i32; }
+    drop(print_line("Running sqrt(-4.0)\n"));
+    if (raw assert_error("sqrt(-4.0)", "Domain error") == false) { exit 18i32; }
+    drop(print_line("Running log(-1.0)\n"));
+    if (raw assert_error("log(-1.0)", "Domain error") == false) { exit 19i32; }
+    drop(print_line("Running asin(2.0)\n"));
+    if (raw assert_error("asin(2.0)", "Domain error") == false) { exit 20i32; }
 
     drop(print_line("[PASS] T03 parser comprehensive tests\n"));
     exit 0i32;
