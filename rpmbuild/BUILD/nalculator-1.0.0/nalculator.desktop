@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=Nalculator
+Comment=A fast, native calculator powered by Nitpick
+Exec=nalculator
+Icon=nalculator
+Terminal=false
+Type=Application
+Categories=Utility;Calculator;
