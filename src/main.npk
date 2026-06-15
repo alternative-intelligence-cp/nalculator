@@ -199,8 +199,52 @@ func:main = int32() {
                     }
                 }
             } else {
+
+            int32:btn = -1i32;
             if (event == raw GTK_EVT_CLICKED()) {
-                int32:btn = raw gtk4_get_last_clicked_button();
+                btn = raw gtk4_get_last_clicked_button();
+            } else {
+            if (event == raw GTK_EVT_KEY_PRESS()) {
+                int32:keyval = raw gtk4_get_last_keyval();
+                if (keyval == 0xff08i32) { btn = btn_c; } else {
+                if (keyval == 0xff1bi32) { btn = btn_ac; } else {
+                if (keyval == 0xff0di32) { btn = btn_eq; } else {
+                if (keyval == 0xff8di32) { btn = btn_eq; } else {
+                if (keyval == 0x03di32)  { btn = btn_eq; } else {
+                if (keyval == 0x030i32)  { btn = btn_0; } else {
+                if (keyval == 0xffb0i32) { btn = btn_0; } else {
+                if (keyval == 0x031i32)  { btn = btn_1; } else {
+                if (keyval == 0xffb1i32) { btn = btn_1; } else {
+                if (keyval == 0x032i32)  { btn = btn_2; } else {
+                if (keyval == 0xffb2i32) { btn = btn_2; } else {
+                if (keyval == 0x033i32)  { btn = btn_3; } else {
+                if (keyval == 0xffb3i32) { btn = btn_3; } else {
+                if (keyval == 0x034i32)  { btn = btn_4; } else {
+                if (keyval == 0xffb4i32) { btn = btn_4; } else {
+                if (keyval == 0x035i32)  { btn = btn_5; } else {
+                if (keyval == 0xffb5i32) { btn = btn_5; } else {
+                if (keyval == 0x036i32)  { btn = btn_6; } else {
+                if (keyval == 0xffb6i32) { btn = btn_6; } else {
+                if (keyval == 0x037i32)  { btn = btn_7; } else {
+                if (keyval == 0xffb7i32) { btn = btn_7; } else {
+                if (keyval == 0x038i32)  { btn = btn_8; } else {
+                if (keyval == 0xffb8i32) { btn = btn_8; } else {
+                if (keyval == 0x039i32)  { btn = btn_9; } else {
+                if (keyval == 0xffb9i32) { btn = btn_9; } else {
+                if (keyval == 0x02ei32)  { btn = btn_dot; } else {
+                if (keyval == 0xffaei32) { btn = btn_dot; } else {
+                if (keyval == 0x02bi32)  { btn = btn_add; } else {
+                if (keyval == 0xffabi32) { btn = btn_add; } else {
+                if (keyval == 0x02di32)  { btn = btn_sub; } else {
+                if (keyval == 0xffadi32) { btn = btn_sub; } else {
+                if (keyval == 0x02ai32)  { btn = btn_mul; } else {
+                if (keyval == 0xffaai32) { btn = btn_mul; } else {
+                if (keyval == 0x02fi32)  { btn = btn_div; } else {
+                if (keyval == 0xffafi32) { btn = btn_div; }
+                }}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}
+            }}
+
+            if (btn != -1i32) {
                 string:append_char = "";
                 bool:should_append = false;
                 
@@ -321,7 +365,8 @@ func:main = int32() {
                     state = raw fsm_append_text(state, append_char);
                     raw gtk4_entry_set_text(entry_id, state.expr);
                 }
-            }}}
+            } // close if (btn != -1)
+            }} // close ROW_ACTIVATED and DESTROY
         }
     }
     
