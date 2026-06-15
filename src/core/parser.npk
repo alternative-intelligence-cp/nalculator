@@ -81,7 +81,7 @@ func:get_precedence = int64(int64:tok_type) {
     pass(0i64); // default precedence 0 for non-operators
 };
 
-pub func:parse_expr = ParseResult(string:input, int64:pos, int64:min_prec) {
+pub func:parse_expr = ParseResult(string:input, int64:pos, int64:min_prec, bool:is_degrees) {
     ParseResult:res;
     LexResult:lex = raw lex_next(input, pos);
     int64:p = lex.next_pos;
@@ -105,12 +105,12 @@ pub func:parse_expr = ParseResult(string:input, int64:pos, int64:min_prec) {
                 } else {
                     LexResult:peek_lex = raw lex_next(input, p);
                     if (peek_lex.tok.type == raw TOK_LPAREN()) {
-                        ParseResult:arg1 = raw parse_expr(input, peek_lex.next_pos, 0i64);
+                        ParseResult:arg1 = raw parse_expr(input, peek_lex.next_pos, 0i64, is_degrees);
                         if (arg1.error) { pass(arg1); }
                         
                         LexResult:peek_comma = raw lex_next(input, arg1.next_pos);
                         if (peek_comma.tok.type == raw TOK_COMMA()) {
-                            ParseResult:arg2 = raw parse_expr(input, peek_comma.next_pos, 0i64);
+                            ParseResult:arg2 = raw parse_expr(input, peek_comma.next_pos, 0i64, is_degrees);
                             if (arg2.error) { pass(arg2); }
                             LexResult:lex_rparen = raw lex_next(input, arg2.next_pos);
                             if (lex_rparen.tok.type == raw TOK_RPAREN()) {
@@ -124,12 +124,17 @@ pub func:parse_expr = ParseResult(string:input, int64:pos, int64:min_prec) {
                             }
                         } else {
                             if (peek_comma.tok.type == raw TOK_RPAREN()) {
-                                if (lex.tok.text == "sin") { res.val = sin(arg1.val); }
-                                if (lex.tok.text == "cos") { res.val = cos(arg1.val); }
-                                if (lex.tok.text == "tan") { res.val = tan(arg1.val); }
-                                if (lex.tok.text == "asin") { res.val = asin(arg1.val); }
-                                if (lex.tok.text == "acos") { res.val = acos(arg1.val); }
-                                if (lex.tok.text == "atan") { res.val = atan(arg1.val); }
+                                float64:rad_val = arg1.val;
+                                if (is_degrees) { rad_val = arg1.val * 3.141592653589793 / 180.0; }
+                                
+                                if (lex.tok.text == "sin") { res.val = sin(rad_val); }
+                                if (lex.tok.text == "cos") { res.val = cos(rad_val); }
+                                if (lex.tok.text == "tan") { res.val = tan(rad_val); }
+                                
+                                if (lex.tok.text == "asin") { res.val = asin(arg1.val); if (is_degrees) { res.val = res.val * 180.0 / 3.141592653589793; } }
+                                if (lex.tok.text == "acos") { res.val = acos(arg1.val); if (is_degrees) { res.val = res.val * 180.0 / 3.141592653589793; } }
+                                if (lex.tok.text == "atan") { res.val = atan(arg1.val); if (is_degrees) { res.val = res.val * 180.0 / 3.141592653589793; } }
+                                
                                 if (lex.tok.text == "sqrt") { res.val = sqrt(arg1.val); }
                                 if (lex.tok.text == "log") { res.val = log10(arg1.val); }
                                 if (lex.tok.text == "ln") { res.val = log(arg1.val); }
@@ -155,7 +160,7 @@ pub func:parse_expr = ParseResult(string:input, int64:pos, int64:min_prec) {
             }
         } else {
             if (lex.tok.type == raw TOK_LPAREN()) {
-            ParseResult:inner = raw parse_expr(input, p, 0i64);
+            ParseResult:inner = raw parse_expr(input, p, 0i64, is_degrees);
             if (inner.error) {
                 pass(inner);
             }
@@ -171,7 +176,7 @@ pub func:parse_expr = ParseResult(string:input, int64:pos, int64:min_prec) {
         } else {
             if (lex.tok.type == raw TOK_MINUS()) {
                 // Unary minus has highest precedence (say 30)
-                ParseResult:inner = raw parse_expr(input, p, 30i64);
+                ParseResult:inner = raw parse_expr(input, p, 30i64, is_degrees);
                 if (inner.error) { pass(inner); }
                 res.val = 0.0 - inner.val;
                 res.next_pos = inner.next_pos;
@@ -194,7 +199,7 @@ pub func:parse_expr = ParseResult(string:input, int64:pos, int64:min_prec) {
             if (prec >= min_prec) {
                 // Left associative, so next min_prec = prec + 1
                 int64:next_prec = prec + 1i64;
-                ParseResult:rhs = raw parse_expr(input, op_lex.next_pos, next_prec);
+                ParseResult:rhs = raw parse_expr(input, op_lex.next_pos, next_prec, is_degrees);
                 if (rhs.error) {
                     pass(rhs);
                 }
@@ -223,6 +228,6 @@ pub func:parse_expr = ParseResult(string:input, int64:pos, int64:min_prec) {
     pass(res);
 };
 
-pub func:eval_expression = ParseResult(string:input) {
-    pass(raw parse_expr(input, 0i64, 0i64));
+pub func:eval_expression = ParseResult(string:input, bool:is_degrees) {
+    pass(raw parse_expr(input, 0i64, 0i64, is_degrees));
 };

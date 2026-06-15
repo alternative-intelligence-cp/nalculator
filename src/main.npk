@@ -60,6 +60,8 @@ func:main = int32() {
     int32:btn_lpar = raw gtk4_add_button("(");
     int32:btn_rpar = raw gtk4_add_button(")");
     
+    int32:btn_angle_mode = raw gtk4_add_button("Rad");
+    
     raw gtk4_grid_attach(sci_grid, btn_sin,  0i32, 0i32, 1i32, 1i32);
     raw gtk4_grid_attach(sci_grid, btn_cos,  1i32, 0i32, 1i32, 1i32);
     raw gtk4_grid_attach(sci_grid, btn_tan,  2i32, 0i32, 1i32, 1i32);
@@ -73,6 +75,8 @@ func:main = int32() {
     raw gtk4_grid_attach(sci_grid, btn_e,    0i32, 2i32, 2i32, 1i32);
     raw gtk4_grid_attach(sci_grid, btn_lpar, 2i32, 2i32, 1i32, 1i32);
     raw gtk4_grid_attach(sci_grid, btn_rpar, 3i32, 2i32, 1i32, 1i32);
+    
+    raw gtk4_grid_attach(sci_grid, btn_angle_mode, 0i32, 3i32, 4i32, 1i32);
     
     // -------------------------------------------------------------
     // STANDARD GRID
@@ -136,6 +140,7 @@ func:main = int32() {
     raw gtk4_entry_set_text(entry_id, "");
     
     bool:is_scientific = false;
+    bool:is_degrees = false;
     
     raw gtk4_window_present();
 
@@ -151,6 +156,15 @@ func:main = int32() {
                 string:append_char = "";
                 bool:should_append = false;
                 
+                if (btn == btn_angle_mode) {
+                    if (is_degrees) {
+                        is_degrees = false;
+                        raw gtk4_button_set_label(btn_angle_mode, "Rad");
+                    } else {
+                        is_degrees = true;
+                        raw gtk4_button_set_label(btn_angle_mode, "Deg");
+                    }
+                } else {
                 if (btn == btn_mode) {
                     if (is_scientific) {
                         is_scientific = false;
@@ -171,7 +185,7 @@ func:main = int32() {
                     raw gtk4_entry_set_text(entry_id, state.expr);
                 } else {
                 if (btn == btn_eq) {
-                    ParseResult:res = raw eval_expression(state.expr);
+                    ParseResult:res = raw eval_expression(state.expr, is_degrees);
                     if (res.error) {
                         raw gtk4_entry_set_text(entry_id, "Error");
                         state = raw fsm_clear(state);
@@ -208,7 +222,7 @@ func:main = int32() {
                     if (btn == btn_e)   { append_char = "e"; should_append = true; } else {
                     if (btn == btn_lpar){ append_char = "("; should_append = true; } else {
                     if (btn == btn_rpar){ append_char = ")"; should_append = true; }
-                    }}}}}}}}}}}}}}}}}}}}}}}}}
+                    }}}}}}}}}}}}}}}}}}}}}}}}}}
                 }}}}
                 
                 if (should_append) {

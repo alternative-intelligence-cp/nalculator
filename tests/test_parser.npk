@@ -11,8 +11,8 @@ func:print_line = NIL(string:msg) {
 
 func:failsafe = int32(tbb32:_err) { exit 1i32; };
 
-func:assert_eval = bool(string:expr, float64:expected) {
-    ParseResult:res = raw eval_expression(expr);
+func:assert_eval = bool(string:expr, float64:expected, bool:is_degrees) {
+    ParseResult:res = raw eval_expression(expr, is_degrees);
     if (res.error) {
         drop(print_line("[FAIL] Parser returned error for expression.\n"));
         pass(false);
@@ -28,22 +28,26 @@ func:assert_eval = bool(string:expr, float64:expected) {
 };
 
 func:main = int32() {
-    if (raw assert_eval("2 + 3", 5.0) == false) { exit 1i32; }
-    if (raw assert_eval("2 + 3 * 4", 14.0) == false) { exit 2i32; }
-    if (raw assert_eval("(2 + 3) * 4", 20.0) == false) { exit 3i32; }
-    if (raw assert_eval("10 / 2 - 1", 4.0) == false) { exit 4i32; }
-    if (raw assert_eval("-5 + 10", 5.0) == false) { exit 5i32; }
-    if (raw assert_eval("3.14 * 2.0", 6.28) == false) { exit 6i32; }
-    if (raw assert_eval("10 - 2 - 3", 5.0) == false) { exit 7i32; } // left associative check
-    if (raw assert_eval("10 / 2 / 2", 2.5) == false) { exit 8i32; } // left associative check
+    if (raw assert_eval("2 + 3", 5.0, false) == false) { exit 1i32; }
+    if (raw assert_eval("2 + 3 * 4", 14.0, false) == false) { exit 2i32; }
+    if (raw assert_eval("(2 + 3) * 4", 20.0, false) == false) { exit 3i32; }
+    if (raw assert_eval("10 / 2 - 1", 4.0, false) == false) { exit 4i32; }
+    if (raw assert_eval("-5 + 10", 5.0, false) == false) { exit 5i32; }
+    if (raw assert_eval("3.14 * 2.0", 6.28, false) == false) { exit 6i32; }
+    if (raw assert_eval("10 - 2 - 3", 5.0, false) == false) { exit 7i32; } // left associative check
+    if (raw assert_eval("10 / 2 / 2", 2.5, false) == false) { exit 8i32; } // left associative check
 
     // Math tests
-    if (raw assert_eval("sin(0.0)", 0.0) == false) { exit 9i32; }
-    if (raw assert_eval("cos(0.0)", 1.0) == false) { exit 10i32; }
-    if (raw assert_eval("pow(2.0, 3.0)", 8.0) == false) { exit 11i32; }
-    if (raw assert_eval("sqrt(16.0)", 4.0) == false) { exit 12i32; }
-    if (raw assert_eval("pi", 3.141592653589793) == false) { exit 13i32; }
-    if (raw assert_eval("e", 2.718281828459045) == false) { exit 14i32; }
+    if (raw assert_eval("sin(0.0)", 0.0, false) == false) { exit 9i32; }
+    if (raw assert_eval("cos(0.0)", 1.0, false) == false) { exit 10i32; }
+    if (raw assert_eval("pow(2.0, 3.0)", 8.0, false) == false) { exit 11i32; }
+    if (raw assert_eval("sqrt(16.0)", 4.0, false) == false) { exit 12i32; }
+    if (raw assert_eval("pi", 3.141592653589793, false) == false) { exit 13i32; }
+    if (raw assert_eval("e", 2.718281828459045, false) == false) { exit 14i32; }
+    
+    // Degree math tests
+    if (raw assert_eval("sin(90.0)", 1.0, true) == false) { exit 15i32; }
+    if (raw assert_eval("asin(1.0)", 90.0, true) == false) { exit 16i32; }
 
     drop(print_line("[PASS] T03 parser comprehensive tests\n"));
     exit 0i32;
