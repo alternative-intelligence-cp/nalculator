@@ -1,0 +1,27 @@
+app-id: com.github.randy.Nalculator
+runtime: org.gnome.Platform
+runtime-version: '45'
+sdk: org.gnome.Sdk
+command: nalculator
+finish-args:
+  - --share=ipc
+  - --socket=fallback-x11
+  - --socket=wayland
+  - --device=dri
+modules:
+  - name: nalculator
+    buildsystem: simple
+    build-commands:
+      - install -D nalculator /app/bin/nalculator
+      - install -D style.css /app/share/nalculator/style.css
+      - install -D nalculator.desktop /app/share/applications/com.github.randy.Nalculator.desktop
+      - install -D nalculator.svg /app/share/icons/hicolor/scalable/apps/com.github.randy.Nalculator.svg
+    sources:
+      - type: file
+        path: .nitpick_make/build/nalculator
+      - type: file
+        path: src/gui/style.css
+      - type: file
+        path: assets/nalculator.desktop
+      - type: file
+        path: assets/nalculator.svg
