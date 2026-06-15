@@ -206,6 +206,17 @@ func:main = int32() {
             } else {
             if (event == raw GTK_EVT_KEY_PRESS()) {
                 int32:keyval = raw gtk4_get_last_keyval();
+                int32:modifier = raw gtk4_get_last_modifier();
+                int32:has_ctrl = modifier / 4i32;
+                has_ctrl = has_ctrl - ((has_ctrl / 2i32) * 2i32);
+
+                if (has_ctrl == 1i32) {
+                    if (keyval == 0x043i32) { raw gtk4_clipboard_set_text(state.expr); } else {
+                    if (keyval == 0x063i32) { raw gtk4_clipboard_set_text(state.expr); } else {
+                    if (keyval == 0x056i32) { raw gtk4_clipboard_request_text(); } else {
+                    if (keyval == 0x076i32) { raw gtk4_clipboard_request_text(); }
+                    }}}}
+                } else {
                 if (keyval == 0xff08i32) { btn = btn_c; } else {
                 if (keyval == 0xff1bi32) { btn = btn_ac; } else {
                 if (keyval == 0xff0di32) { btn = btn_eq; } else {
@@ -242,7 +253,56 @@ func:main = int32() {
                 if (keyval == 0x02fi32)  { btn = btn_div; } else {
                 if (keyval == 0xffafi32) { btn = btn_div; }
                 }}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}
-            }}
+                } // close else has_ctrl
+            } else {
+            if (event == raw GTK_EVT_CLIPBOARD_TEXT_READY()) {
+                string:clip_text = raw gtk4_clipboard_get_text();
+                int64:clip_len = string_length(clip_text);
+                int64:clip_i = 0i64;
+                while (clip_i < clip_len) {
+                    string:c = string_substring(clip_text, clip_i, clip_i + 1i64);
+                    bool:is_valid = false;
+                    if (c == "0") { is_valid = true; } else {
+                    if (c == "1") { is_valid = true; } else {
+                    if (c == "2") { is_valid = true; } else {
+                    if (c == "3") { is_valid = true; } else {
+                    if (c == "4") { is_valid = true; } else {
+                    if (c == "5") { is_valid = true; } else {
+                    if (c == "6") { is_valid = true; } else {
+                    if (c == "7") { is_valid = true; } else {
+                    if (c == "8") { is_valid = true; } else {
+                    if (c == "9") { is_valid = true; } else {
+                    if (c == ".") { is_valid = true; } else {
+                    if (c == "+") { is_valid = true; } else {
+                    if (c == "-") { is_valid = true; } else {
+                    if (c == "*") { is_valid = true; } else {
+                    if (c == "/") { is_valid = true; } else {
+                    if (c == "(") { is_valid = true; } else {
+                    if (c == ")") { is_valid = true; } else {
+                    if (c == "^") { is_valid = true; } else {
+                    if (c == "e") { is_valid = true; } else {
+                    if (c == "p") { is_valid = true; } else {
+                    if (c == "i") { is_valid = true; } else {
+                    if (c == "s") { is_valid = true; } else {
+                    if (c == "i") { is_valid = true; } else {
+                    if (c == "n") { is_valid = true; } else {
+                    if (c == "c") { is_valid = true; } else {
+                    if (c == "o") { is_valid = true; } else {
+                    if (c == "t") { is_valid = true; } else {
+                    if (c == "a") { is_valid = true; } else {
+                    if (c == "l") { is_valid = true; } else {
+                    if (c == "g") { is_valid = true; } else {
+                    if (c == "q") { is_valid = true; } else {
+                    if (c == "r") { is_valid = true; }
+                    }}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}
+                    
+                    if (is_valid) {
+                        state = raw fsm_append_text(state, c);
+                    }
+                    clip_i = clip_i + 1i64;
+                }
+                raw gtk4_entry_set_text(entry_id, state.expr);
+            }}}
 
             if (btn != -1i32) {
                 string:append_char = "";
