@@ -27,8 +27,9 @@ make test
 
 ## Features and Usage
 
-- **Standard Calculations**: Supports standard arithmetic `+`, `-`, `*`, `/`.
-- **Scientific Functions**: Supports trigonometric functions (`sin`, `cos`, `tan`), logarithms (`log`, `ln`), exponential functions (`^`, `sqrt`), and mathematical constants (`pi`, `e`).
+- **Standard Calculations**: Supports standard arithmetic `+`, `-`, `*`, `/`, and modulo `%`.
+- **Scientific Functions**: Supports trigonometric functions (`sin`, `cos`, `tan`), inverse trig (`asin`, `acos`, `atan`), logarithms (`log`, `ln`), exponential functions (`exp`, `sqrt`, `pow`), and mathematical constants (`pi`, `e`).
+- **Bitwise Operations**: Supports Bitwise XOR (`^`).
 - **Memory Storage**:
   - `MC`: Memory Clear.
   - `MR`: Memory Recall.

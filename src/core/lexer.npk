@@ -9,6 +9,8 @@ pub func:TOK_RPAREN = int64() { pass(7i64); };
 pub func:TOK_IDENTIFIER = int64() { pass(8i64); };
 pub func:TOK_COMMA  = int64() { pass(9i64); };
 pub func:TOK_ERROR  = int64() { pass(10i64); };
+pub func:TOK_XOR    = int64() { pass(11i64); };
+pub func:TOK_MOD    = int64() { pass(12i64); };
 
 pub struct:Token = {
     int64:type;
@@ -140,6 +142,18 @@ pub func:lex_next = LexResult(string:input, int64:start_pos) {
     if (c == ",") {
         res.tok.type = raw TOK_COMMA();
         res.tok.text = ",";
+        res.next_pos = pos + 1i64;
+        pass(res);
+    }
+    if (c == "^") {
+        res.tok.type = raw TOK_XOR();
+        res.tok.text = "^";
+        res.next_pos = pos + 1i64;
+        pass(res);
+    }
+    if (c == "%") {
+        res.tok.type = raw TOK_MOD();
+        res.tok.text = "%";
         res.next_pos = pos + 1i64;
         pass(res);
     }

@@ -75,6 +75,22 @@ func:main = int32() {
     drop(print_line("Running asin(2.0)\n"));
     if (raw assert_error("asin(2.0)", "Domain error") == false) { exit 20i32; }
 
+    // XOR operator tests (bitwise: 6=110, 3=011, XOR=101=5)
+    if (raw assert_eval("6 ^ 3", 5.0, false) == false) { exit 21i32; }
+    // XOR with same value yields 0
+    if (raw assert_eval("5 ^ 5", 0.0, false) == false) { exit 22i32; }
+
+    // Modulo tests
+    if (raw assert_eval("10 % 3", 1.0, false) == false) { exit 23i32; }
+    if (raw assert_eval("5 % 3", 2.0, false) == false) { exit 24i32; }
+    drop(print_line("Running 5 % 0\n"));
+    if (raw assert_error("5 % 0", "Division by zero") == false) { exit 25i32; }
+
+    // Unknown function error
+    drop(print_line("Running foo(5)\n"));
+    if (raw assert_error("foo(5)", "Unknown function") == false) { exit 26i32; }
+
     drop(print_line("[PASS] T03 parser comprehensive tests\n"));
     exit 0i32;
 };
+

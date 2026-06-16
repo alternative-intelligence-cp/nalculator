@@ -79,6 +79,8 @@ func:get_precedence = int64(int64:tok_type) {
     if (tok_type == raw TOK_MINUS()) { pass(10i64); }
     if (tok_type == raw TOK_MUL()) { pass(20i64); }
     if (tok_type == raw TOK_DIV()) { pass(20i64); }
+    if (tok_type == raw TOK_MOD()) { pass(20i64); }
+    if (tok_type == raw TOK_XOR()) { pass(7i64); }
     pass(0i64); // default precedence 0 for non-operators
 };
 
@@ -133,24 +135,30 @@ pub func:parse_expr = ParseResult(string:input, int64:pos, int64:min_prec, bool:
                                 float64:rad_val = arg1.val;
                                 if (is_degrees) { rad_val = arg1.val * 3.141592653589793 / 180.0; }
                                 
-                                if (lex.tok.text == "sin") { res.val = sin(rad_val); }
-                                if (lex.tok.text == "cos") { res.val = cos(rad_val); }
-                                if (lex.tok.text == "tan") { res.val = tan(rad_val); }
+                                bool:func_matched = false;
+                                if (lex.tok.text == "sin")   { res.val = sin(rad_val);   func_matched = true; }
+                                if (lex.tok.text == "cos")   { res.val = cos(rad_val);   func_matched = true; }
+                                if (lex.tok.text == "tan")   { res.val = tan(rad_val);   func_matched = true; }
                                 
-                                if (lex.tok.text == "asin") { if (arg1.val < -1.0) { res.error = true; res.error_msg = "Domain error"; pass(res); } else { if (arg1.val > 1.0) { res.error = true; res.error_msg = "Domain error"; pass(res); } else { res.val = asin(arg1.val); if (is_degrees) { res.val = res.val * 180.0 / 3.141592653589793; } } } }
-                                if (lex.tok.text == "acos") { if (arg1.val < -1.0) { res.error = true; res.error_msg = "Domain error"; pass(res); } else { if (arg1.val > 1.0) { res.error = true; res.error_msg = "Domain error"; pass(res); } else { res.val = acos(arg1.val); if (is_degrees) { res.val = res.val * 180.0 / 3.141592653589793; } } } }
-                                if (lex.tok.text == "atan") { res.val = atan(arg1.val); if (is_degrees) { res.val = res.val * 180.0 / 3.141592653589793; } }
+                                if (lex.tok.text == "asin") { if (arg1.val < -1.0) { res.error = true; res.error_msg = "Domain error"; pass(res); } else { if (arg1.val > 1.0) { res.error = true; res.error_msg = "Domain error"; pass(res); } else { res.val = asin(arg1.val); if (is_degrees) { res.val = res.val * 180.0 / 3.141592653589793; } func_matched = true; } } }
+                                if (lex.tok.text == "acos") { if (arg1.val < -1.0) { res.error = true; res.error_msg = "Domain error"; pass(res); } else { if (arg1.val > 1.0) { res.error = true; res.error_msg = "Domain error"; pass(res); } else { res.val = acos(arg1.val); if (is_degrees) { res.val = res.val * 180.0 / 3.141592653589793; } func_matched = true; } } }
+                                if (lex.tok.text == "atan")  { res.val = atan(arg1.val); if (is_degrees) { res.val = res.val * 180.0 / 3.141592653589793; } func_matched = true; }
                                 
-                                if (lex.tok.text == "sqrt") { if (arg1.val < 0.0) { res.error = true; res.error_msg = "Domain error"; pass(res); } else { res.val = sqrt(arg1.val); } }
-                                if (lex.tok.text == "log") { if (arg1.val <= 0.0) { res.error = true; res.error_msg = "Domain error"; pass(res); } else { res.val = log10(arg1.val); } }
-                                if (lex.tok.text == "ln") { if (arg1.val <= 0.0) { res.error = true; res.error_msg = "Domain error"; pass(res); } else { res.val = log(arg1.val); } }
-                                if (lex.tok.text == "log2") { if (arg1.val <= 0.0) { res.error = true; res.error_msg = "Domain error"; pass(res); } else { res.val = log2(arg1.val); } }
-                                if (lex.tok.text == "log10") { if (arg1.val <= 0.0) { res.error = true; res.error_msg = "Domain error"; pass(res); } else { res.val = log10(arg1.val); } }
-                                if (lex.tok.text == "exp") { res.val = exp(arg1.val); }
-                                if (lex.tok.text == "abs") { res.val = abs(arg1.val); }
-                                if (lex.tok.text == "floor") { res.val = floor(arg1.val); }
-                                if (lex.tok.text == "ceil") { res.val = ceil(arg1.val); }
-                                if (lex.tok.text == "round") { res.val = round(arg1.val); }
+                                if (lex.tok.text == "sqrt")  { if (arg1.val < 0.0) { res.error = true; res.error_msg = "Domain error"; pass(res); } else { res.val = sqrt(arg1.val); func_matched = true; } }
+                                if (lex.tok.text == "log")   { if (arg1.val <= 0.0) { res.error = true; res.error_msg = "Domain error"; pass(res); } else { res.val = log10(arg1.val); func_matched = true; } }
+                                if (lex.tok.text == "ln")    { if (arg1.val <= 0.0) { res.error = true; res.error_msg = "Domain error"; pass(res); } else { res.val = log(arg1.val); func_matched = true; } }
+                                if (lex.tok.text == "log2")  { if (arg1.val <= 0.0) { res.error = true; res.error_msg = "Domain error"; pass(res); } else { res.val = log2(arg1.val); func_matched = true; } }
+                                if (lex.tok.text == "log10") { if (arg1.val <= 0.0) { res.error = true; res.error_msg = "Domain error"; pass(res); } else { res.val = log10(arg1.val); func_matched = true; } }
+                                if (lex.tok.text == "exp")   { res.val = exp(arg1.val); func_matched = true; }
+                                if (lex.tok.text == "abs")   { if (arg1.val < 0.0) { res.val = 0.0 - arg1.val; } else { res.val = arg1.val; } func_matched = true; }
+                                if (lex.tok.text == "floor") { res.val = floor(arg1.val); func_matched = true; }
+                                if (lex.tok.text == "ceil")  { res.val = ceil(arg1.val); func_matched = true; }
+                                if (lex.tok.text == "round") { res.val = round(arg1.val); func_matched = true; }
+                                if (func_matched == false) {
+                                    res.error = true;
+                                    res.error_msg = "Unknown function";
+                                    pass(res);
+                                }
                                 res.next_pos = peek_comma.next_pos;
                                 res.error = false;
                                 res.error_msg = "";
@@ -160,6 +168,7 @@ pub func:parse_expr = ParseResult(string:input, int64:pos, int64:min_prec, bool:
                                 pass(res);
                             }
                         }
+
                     } else {
                         res.error = true;
                         res.error_msg = "Expected '('";
@@ -231,6 +240,21 @@ pub func:parse_expr = ParseResult(string:input, int64:pos, int64:min_prec, bool:
                         pass(res);
                     }
                     res.val = res.val / rhs.val;
+                }
+                if (op_lex.tok.type == raw TOK_MOD()) {
+                    if (rhs.val == 0.0) {
+                        res.error = true;
+                        res.error_msg = "Division by zero";
+                        pass(res);
+                    }
+                    res.val = res.val - (floor(res.val / rhs.val) * rhs.val);
+
+                }
+                if (op_lex.tok.type == raw TOK_XOR()) {
+                    int64:lhs_i = @cast_unchecked<int64>(res.val);
+                    int64:rhs_i = @cast_unchecked<int64>(rhs.val);
+                    int64:xor_i = lhs_i ^ rhs_i;
+                    res.val = @cast_unchecked<float64>(xor_i);
                 }
                 res.next_pos = rhs.next_pos;
             } else {

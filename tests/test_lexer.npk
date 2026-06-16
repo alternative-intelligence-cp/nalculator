@@ -63,6 +63,28 @@ func:main = int32() {
     res = raw lex_next(input, pos); pos = res.next_pos;
     if (raw assert_tok(res, raw TOK_EOF(), "") == false) { exit 12i32; }
     
+    // XOR and MOD token tests
+    string:xor_input = "6 ^ 3";
+    int64:xp = 0i64;
+    LexResult:xr;
+    xr = raw lex_next(xor_input, xp); xp = xr.next_pos;
+    if (raw assert_tok(xr, raw TOK_NUMBER(), "6") == false) { exit 13i32; }
+    xr = raw lex_next(xor_input, xp); xp = xr.next_pos;
+    if (raw assert_tok(xr, raw TOK_XOR(), "^") == false) { exit 14i32; }
+    xr = raw lex_next(xor_input, xp); xp = xr.next_pos;
+    if (raw assert_tok(xr, raw TOK_NUMBER(), "3") == false) { exit 15i32; }
+    
+    string:mod_input = "10 % 3";
+    int64:mp = 0i64;
+    LexResult:mr;
+    mr = raw lex_next(mod_input, mp); mp = mr.next_pos;
+    if (raw assert_tok(mr, raw TOK_NUMBER(), "10") == false) { exit 16i32; }
+    mr = raw lex_next(mod_input, mp); mp = mr.next_pos;
+    if (raw assert_tok(mr, raw TOK_MOD(), "%") == false) { exit 17i32; }
+    mr = raw lex_next(mod_input, mp); mp = mr.next_pos;
+    if (raw assert_tok(mr, raw TOK_NUMBER(), "3") == false) { exit 18i32; }
+    
     drop(print_line("[PASS] T02 lexer comprehensive tests\n"));
     exit 0i32;
 };
+

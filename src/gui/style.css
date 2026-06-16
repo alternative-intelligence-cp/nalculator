@@ -5,7 +5,7 @@ window {
     color: #ffffff;
 }
 
-entry {
+entry.display {
     background-color: #2d2d2d;
     color: #ffffff;
     border: none;
