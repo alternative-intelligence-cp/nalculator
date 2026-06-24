@@ -6,7 +6,7 @@ version = "1.0.0"
 type = "binary"
 sources = ["src/main.npk"]
 deps = []
-flags = ["-O2", "-I", "/home/randy/Workspace/REPOS/nitpick-packages/packages/nitpick-math/src", "-I", "/home/randy/Workspace/REPOS/nitpick-packages/packages/nitpick-gtk4/src"]
+flags = ["-picky", "-O2", "-I", "/home/randy/Workspace/REPOS/nitpick-packages/packages/nitpick-math/src", "-I", "/home/randy/Workspace/REPOS/nitpick-packages/packages/nitpick-gtk4/src"]
 link_libraries = ["gtk-4", "gio-2.0", "gobject-2.0", "glib-2.0", "m", "nitpick_gtk4_shim"]
 link_paths = ["/home/randy/Workspace/REPOS/nitpick-packages/packages/nitpick-gtk4"]
 
@@ -14,7 +14,7 @@ link_paths = ["/home/randy/Workspace/REPOS/nitpick-packages/packages/nitpick-gtk
 type = "binary"
 sources = ["tests/test_main.npk"]
 deps = []
-flags = ["-I", "/home/randy/Workspace/REPOS/nitpick-packages/packages/nitpick-math/src"]
+flags = ["-picky", "-I", "/home/randy/Workspace/REPOS/nitpick-packages/packages/nitpick-math/src"]
 link_libraries = ["gtk-4", "gio-2.0", "gobject-2.0", "glib-2.0", "m"]
 link_paths = []
 
@@ -22,7 +22,7 @@ link_paths = []
 type = "binary"
 sources = ["tests/test_lexer.npk"]
 deps = []
-flags = ["-I", "/home/randy/Workspace/REPOS/nitpick-packages/packages/nitpick-math/src"]
+flags = ["-picky", "-I", "/home/randy/Workspace/REPOS/nitpick-packages/packages/nitpick-math/src"]
 link_libraries = ["gtk-4", "gio-2.0", "gobject-2.0", "glib-2.0", "m"]
 link_paths = []
 
@@ -30,7 +30,7 @@ link_paths = []
 type = "binary"
 sources = ["tests/test_parser.npk"]
 deps = []
-flags = ["-I", "/home/randy/Workspace/REPOS/nitpick-packages/packages/nitpick-math/src"]
+flags = ["-picky", "-I", "/home/randy/Workspace/REPOS/nitpick-packages/packages/nitpick-math/src"]
 link_libraries = ["gtk-4", "gio-2.0", "gobject-2.0", "glib-2.0", "m"]
 link_paths = []
 
@@ -38,6 +38,6 @@ link_paths = []
 type = "binary"
 sources = ["tests/test_fsm.npk"]
 deps = []
-flags = ["-I", "src"]
+flags = ["-picky", "-I", "src"]
 link_libraries = ["m"]
 link_paths = []
