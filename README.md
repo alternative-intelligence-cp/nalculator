@@ -11,10 +11,10 @@ Nalculator is an advanced, native GTK4-based calculator application written in N
 
 ## Building
 
-To build Nalculator from source, ensure you have the `npkc` compiler and GTK4 development libraries installed.
+To build Nalculator from source, ensure you have the `npkc` compiler (version `0.61.x` or later) and GTK4 development libraries installed.
 
 ```bash
-make
+npkc -picky src/main.npk
 ```
 
 The resulting binary will be output by the build system.
